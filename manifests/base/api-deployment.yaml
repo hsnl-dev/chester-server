@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-service
+spec:
+  selector:
+    matchLabels:
+      service: api-service
+  replicas: 1 
+  template:
+    metadata:
+      labels:
+        service: api-service
+    spec:
+      terminationGracePeriodSeconds: 60
+      volumes:
+      - name: google-cloud-key
+        secret:
+          secretName: gcp-key
+      containers:
+      - image: gcr.io/agricultureiot/chester-server:latest
+        imagePullPolicy: Always
+        name: app
+        args: ["service", "app"]
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/secrets/google/key.json
+        volumeMounts:
+        - name: google-cloud-key
+          mountPath: /var/secrets/google
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 3000
+            scheme: HTTP
+          initialDelaySeconds: 2
+          periodSeconds: 2
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+            requests:
+                memory: "200Mi"
+                cpu: "100m"
+            limits:
+                memory: "400Mi"
+                cpu: "200m"
