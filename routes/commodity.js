@@ -18,7 +18,11 @@ router.get('/', auth, async(req, res, next) => {
   for (let i = 0; i < vendors.length; i++) {
     const commodities = await commodityModel.getCommodities(vendors[i].id);
     if (commodities) {
-      commodities.forEach(element => commodity_arr.push(element));
+      commodities.forEach(element => {
+        if (element.activate === 1) {
+          commodity_arr.push(element);
+        }
+      });
     }
   }
   console.log(commodity_arr);
@@ -84,6 +88,15 @@ router.post("/:commodity_id/edit", auth, async (req, res) => {
     return res.status(200).send("Update commodity successful");
   } else {
     return res.status(403).send("Update commodity failed");
+  }
+});
+
+router.post("/:commodity_id/delete", auth, async (req, res) => {
+  const success = await commodityModel.deleteCommodity(req.params.commodity_id);
+  if (success) {
+    return res.status(200).send("Delete commodity successful");
+  } else {
+    return res.status(403).send("Delete commodity failed");
   }
 });
 

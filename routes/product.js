@@ -73,4 +73,13 @@ router.post("/:product_id/edit", auth, async (req, res) => {
   }
 });
 
+router.post("/:product_id/deactivate", auth, async (req, res) => {
+  const success = await productModel.deactivateProduct(req.params.product_id);
+  if (success) {
+    return res.status(200).send("Deactivate product successful");
+  } else {
+    return res.status(403).send("Deactivate product failed");
+  }
+});
+
 module.exports = router;

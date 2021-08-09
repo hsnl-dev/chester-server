@@ -33,7 +33,8 @@ class ProductModel {
         storage: storage,
         picture: picture,
         picture_description: picture_description,        
-        note: note
+        note: note,
+        activate: 1
       });
       return result[0];
     } catch (err) {
@@ -59,7 +60,8 @@ class ProductModel {
           storage: storage,
           picture: picture,
           picture_description: picture_description,        
-          note: note
+          note: note,
+          activate: 1
         });
       return result;
     } catch (err) {
@@ -84,6 +86,20 @@ class ProductModel {
     try {
       const result = await this.db('product')
         .where('partner_id', partner_id);
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async deactivateProduct(product_id) {
+    try {
+      const result = await this.db('product')
+        .where('id', product_id)
+        .update({
+          activate: 0
+        });
       return result;
     } catch (err) {
       console.log(err);

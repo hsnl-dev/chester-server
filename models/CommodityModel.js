@@ -33,7 +33,8 @@ class CommodityModel {
         EXP: EXP,
         unit_price: unit_price,
         gross_price: gross_price,        
-        note: note
+        note: note,
+        activate: 1
       });
       return result[0];
     } catch (err) {
@@ -60,6 +61,7 @@ class CommodityModel {
           unit_price: unit_price,
           gross_price: gross_price,        
           note: note,
+          activate: 1
         });
       return result;
     } catch (err) {
@@ -84,6 +86,20 @@ class CommodityModel {
     try {
       const result = await this.db('commodity')
         .where('vendor_id', vendor_id);
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async deleteCommodity(commodity_id) {
+    try {
+      const result = await this.db('commodity')
+        .where('id', commodity_id)
+        .update({
+          activate: 0
+        });
       return result;
     } catch (err) {
       console.log(err);
