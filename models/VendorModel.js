@@ -17,8 +17,9 @@ class VendorModel {
     });
   }
 
-  async createVendor(vendor_name, partner_id) {
+  async createVendor(data) {
     try {
+      const {vendor_name, note, partner_id} = data;
       const vendorExist = await this.db('vendor')
         .where('name', vendor_name)
         .where('partner_id', partner_id)
@@ -29,6 +30,7 @@ class VendorModel {
       } else {
         const result = await this.db('vendor').insert({
           name: vendor_name,
+          note: note,
           partner_id: partner_id
         });
         return result[0];
