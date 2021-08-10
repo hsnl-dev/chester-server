@@ -37,6 +37,18 @@ class PartnerModel {
     }
   }
 
+  async getPartnerData(partner_id) {
+    try {
+      const result = await this.db('partner')
+        .where("id", partner_id)
+        .first();
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
   async addMember(partnerID, userID, user_role) {
     try {
       const result = await this.db('partner_member').insert({

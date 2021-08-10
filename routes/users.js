@@ -29,8 +29,13 @@ router.get('/', auth, async(req, res, next) => {
     }
     member_arr.push(data);
   }
-  if (member_arr) {
-    res.status(200).json(member_arr);
+  const partner_data = await partnerModel.getPartnerData(partner.partner_id);
+  const result = {
+    members: member_arr,
+    partner: partner_data
+  }
+  if (result) {
+    res.status(200).send(result);
   } else {
     res.status(403).send("Get member failed");
   }
