@@ -15,7 +15,7 @@ const BASE_URL = "http://localhost:3000";
 
 router.get('/', auth, async(req, res, next) => {
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const members = await partnerModel.getPartnerMembers(partner.id);
+  const members = await partnerModel.getPartnerMembers(partner.partner_id);
   let member_arr = [];
   for (let i = 0; i < members.length; i++) {
     const user = await userModel.getUserById(members[i].user_id);
@@ -104,7 +104,7 @@ router.post('/create', auth, async(req, res, next) => {
       if (!partnerSuccess) return res.status(400).send("Create partner failed");
     } else if (role == 2) {   // user is clerk => add member
       const partner = await partnerModel.getPartnerByUserId(req.user_id);
-      const addMemberSuccess = await partnerModel.addMember(partner.id, userID, role);
+      const addMemberSuccess = await partnerModel.addMember(partner.partner_id, userID, role);
       if (!addMemberSuccess) return res.status(400).send("Add member failed");
     }
     // } else {
@@ -161,7 +161,7 @@ router.post("/:user_id/delete", auth, async (req, res) => {
   console.log(req.params.user_id);
   const success = await userModel.deleteUser(req.params.user_id);
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const success2 = await partnerModel.deleteMember(partner.id, req.params.user_id);
+  const success2 = await partnerModel.deleteMember(partner.partner_id, req.params.user_id);
   if (success && success2) {
     return res.status(200).send("Delete user successful");
   } else {

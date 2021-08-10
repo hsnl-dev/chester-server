@@ -10,7 +10,7 @@ const productModel = new ProductModel();
 
 router.get('/', auth, async(req, res, next) => {
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const products =  await productModel.getProducts(partner.id);
+  const products =  await productModel.getProducts(partner.partner_id);
   console.log(products);
   res.status(200).send(products);
 });
@@ -19,7 +19,7 @@ router.post('/create', auth, async(req, res, next) => {
   const {product_no, name, spec, product_unit, price, weight, weight_unit, shelf_life, storage, picture, picture_description, note} = req.body;
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
   const success = await productModel.createProduct({
-    partner_id: partner.id,
+    partner_id: partner.partner_id,
     product_no: product_no,
     name: name,
     spec: spec,

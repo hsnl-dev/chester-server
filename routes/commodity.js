@@ -12,7 +12,7 @@ const commodityModel = new CommodityModel();
 
 router.get('/', auth, async(req, res, next) => {
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const vendors =  await vendorModel.getAllVendors(partner.id);
+  const vendors = await vendorModel.getAllVendors(partner.partner_id);
   console.log(vendors.length);
   const commodity_arr = [];
   for (let i = 0; i < vendors.length; i++) {
@@ -25,14 +25,18 @@ router.get('/', auth, async(req, res, next) => {
       });
     }
   }
-  console.log(commodity_arr);
-  res.status(200).send(commodity_arr);
+  const result = {
+    vendors: vendors,
+    commodities: commodity_arr
+  };
+  console.log(result);
+  res.status(200).send(result);
 });
 
 router.post('/create', auth, async(req, res, next) => {
   const {vendor_name, name, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note} = req.body;
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const vendor =  await vendorModel.getVendorByName(vendor_name, partner.id);
+  const vendor =  await vendorModel.getVendorByName(vendor_name, partner.partner_id);
   const success = await commodityModel.createCommodity({
     vendor_id: vendor.id,
     name: name,
@@ -68,7 +72,7 @@ router.get("/:commodity_id/view", auth, async (req, res) => {
 router.post("/:commodity_id/edit", auth, async (req, res) => {
   const {vendor_name, name, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note} = req.body;
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const vendor =  await vendorModel.getVendorByName(vendor_name, partner.id);
+  const vendor =  await vendorModel.getVendorByName(vendor_name, partner.partner_id);
   const success = await commodityModel.updateCommodity({
     commodity_id: req.params.commodity_id,
     vendor_id: vendor.id,
@@ -97,6 +101,17 @@ router.post("/:commodity_id/delete", auth, async (req, res) => {
     return res.status(200).send("Delete commodity successful");
   } else {
     return res.status(403).send("Delete commodity failed");
+  }
+});
+
+router.post("/create-vendor", auth, async (req, res) => {
+  const {vendor_name} = req.body;
+  const partner = await partnerModel.getPartnerByUserId(req.user_id);
+  const result = vendorModel.createVendor(vendor_name, partner.partner_id);
+  if (result) {
+    res.status(200).send("Create vendor successful");
+  } else {
+    res.status(403).send("Create vendor failed");
   }
 });
 
