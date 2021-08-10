@@ -19,7 +19,7 @@ class ProductModel {
 
   async createProduct(product) {
     try {
-      const {partner_id, product_no, name, spec, product_unit, price, weight, weight_unit, shelf_life, storage, picture, picture_description, note} = product;
+      const {partner_id, product_no, name, spec, product_unit, price, weight, weight_unit, shelflife, shelflife_unit, storage, picture, picture_description, note} = product;
       const result = await this.db('product').insert({
         partner_id: partner_id,
         product_no: product_no,
@@ -29,7 +29,8 @@ class ProductModel {
         price: price,
         weight: weight,
         weight_unit: weight_unit,
-        shelf_life: shelf_life,
+        shelflife: shelflife,
+        shelflife_unit: shelflife_unit,
         storage: storage,
         picture: picture,
         picture_description: picture_description,        
@@ -45,7 +46,7 @@ class ProductModel {
 
   async updateProduct(product) {
     try {
-      const {product_id, product_no, name, spec, product_unit, price, weight, weight_unit, shelf_life, storage, picture, picture_description, note} = product;
+      const {product_id, product_no, name, spec, product_unit, price, weight, weight_unit, shelflife, shelflife_unit, storage, picture, picture_description, note} = product;
       const result = await this.db('product')
         .where('id', product_id)
         .update({
@@ -56,7 +57,8 @@ class ProductModel {
           price: price,
           weight: weight,
           weight_unit: weight_unit,
-          shelf_life: shelf_life,
+          shelflife: shelflife,
+          shelflife_unit: shelflife_unit,
           storage: storage,
           picture: picture,
           picture_description: picture_description,        
@@ -100,6 +102,74 @@ class ProductModel {
         .update({
           activate: 0
         });
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async createSpec(data) {
+    const {partner_id, spec} = data;
+    try {
+      const specExist = await this.db('product_spec')
+        .where('partner_id', partner_id)
+        .where('spec', spec)
+        .first();
+      if (specExist) {
+        console.log("Spec already exist");
+        return specExist;
+      } else {
+        const result = await this.db('product_spec').insert({
+          partner_id: partner_id,
+          spec: spec
+        });
+        return result;
+      }
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async getSpecs(partner_id) {
+    try {
+      const result = await this.db('product_spec')
+        .where('partner_id', partner_id);
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async createProductUnit(data) {
+    const {partner_id, unit} = data;
+    try {
+      const unitExist = await this.db('product_unit')
+        .where('partner_id', partner_id)
+        .where('unit', unit)
+        .first();
+      if (unitExist) {
+        console.log("Unit already exist");
+        return unitExist;
+      } else {
+        const result = await this.db('product_unit').insert({
+          partner_id: partner_id,
+          unit: unit
+        });
+        return result;
+      }
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async getProductUnits(partner_id) {
+    try {
+      const result = await this.db('product_unit')
+        .where('partner_id', partner_id);
       return result;
     } catch (err) {
       console.log(err);

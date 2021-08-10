@@ -11,12 +11,19 @@ const productModel = new ProductModel();
 router.get('/', auth, async(req, res, next) => {
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
   const products =  await productModel.getProducts(partner.partner_id);
-  console.log(products);
-  res.status(200).send(products);
+  const specs = await productModel.getSpecs(partner.partner_id);
+  const units = await productModel.getProductUnits(partner.partner_id);
+  const result = {
+    products: products,
+    specs: specs,
+    units: units
+  };
+  console.log(result);
+  res.status(200).send(result);
 });
 
 router.post('/create', auth, async(req, res, next) => {
-  const {product_no, name, spec, product_unit, price, weight, weight_unit, shelf_life, storage, picture, picture_description, note} = req.body;
+  const {product_no, name, spec, product_unit, price, weight, weight_unit, shelf_life, shelf_life_unit, storage, picture, picture_description, note} = req.body;
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
   const success = await productModel.createProduct({
     partner_id: partner.partner_id,
@@ -27,7 +34,8 @@ router.post('/create', auth, async(req, res, next) => {
     price: price,
     weight: weight,
     weight_unit: weight_unit,
-    shelf_life: shelf_life,
+    shelflife: shelf_life,
+    shelflife_unit: shelf_life_unit,
     storage: storage,
     picture: picture,
     picture_description: picture_description,        
@@ -50,7 +58,7 @@ router.get("/:product_id/view", auth, async (req, res) => {
 });
 
 router.post("/:product_id/edit", auth, async (req, res) => {
-  const {product_no, name, spec, product_unit, price, weight, weight_unit, shelf_life, storage, picture, picture_description, note} = req.body;
+  const {product_no, name, spec, product_unit, price, weight, weight_unit, shelf_life, shelf_life_unit, storage, picture, picture_description, note} = req.body;
   const success = await productModel.updateProduct({
     product_id: req.params.product_id,
     product_no: product_no,
@@ -60,7 +68,8 @@ router.post("/:product_id/edit", auth, async (req, res) => {
     price: price,
     weight: weight,
     weight_unit: weight_unit,
-    shelf_life: shelf_life,
+    shelflife: shelf_life,
+    shelflife_unit: shelf_life_unit,
     storage: storage,
     picture: picture,
     picture_description: picture_description,        
@@ -79,6 +88,28 @@ router.post("/:product_id/deactivate", auth, async (req, res) => {
     return res.status(200).send("Deactivate product successful");
   } else {
     return res.status(403).send("Deactivate product failed");
+  }
+});
+
+router.post("/create-spec", auth, async (req, res) => {
+  const {spec} = req.body;
+  const partner = await partnerModel.getPartnerByUserId(req.user_id);
+  const result = productModel.createSpec(spec, partner.partner_id);
+  if (result) {
+    res.status(200).send("Create spec successful");
+  } else {
+    res.status(403).send("Create spec failed");
+  }
+});
+
+router.post("/create-unit", auth, async (req, res) => {
+  const {unit} = req.body;
+  const partner = await partnerModel.getPartnerByUserId(req.user_id);
+  const result = productModel.createProductUnit(unit, partner.partner_id);
+  if (result) {
+    res.status(200).send("Create unit successful");
+  } else {
+    res.status(403).send("Create unit failed");
   }
 });
 

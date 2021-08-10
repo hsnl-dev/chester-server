@@ -34,11 +34,11 @@ router.get('/', auth, async(req, res, next) => {
 });
 
 router.post('/create', auth, async(req, res, next) => {
-  const {vendor_name, name, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note} = req.body;
-  const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const vendor =  await vendorModel.getVendorByName(vendor_name, partner.partner_id);
+  const {vendor_id, name, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note} = req.body;
+  //const partner = await partnerModel.getPartnerByUserId(req.user_id);
+  //const vendor =  await vendorModel.getVendorByName(vendor_name, partner.partner_id);
   const success = await commodityModel.createCommodity({
-    vendor_id: vendor.id,
+    vendor_id: parseInt(vendor_id),
     name: name,
     batch_no: batch_no,
     origin: origin,
