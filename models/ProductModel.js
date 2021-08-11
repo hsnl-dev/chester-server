@@ -109,6 +109,20 @@ class ProductModel {
     }
   }
 
+  async activateProduct(product_id) {
+    try {
+      const result = await this.db('product')
+        .where('id', product_id)
+        .update({
+          activate: 1
+        });
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
   async createSpec(data) {
     const {partner_id, spec} = data;
     try {

@@ -91,6 +91,15 @@ router.post("/:product_id/deactivate", auth, async (req, res) => {
   }
 });
 
+router.post("/:product_id/activate", auth, async (req, res) => {
+  const success = await productModel.activateProduct(req.params.product_id);
+  if (success) {
+    return res.status(200).send("Activate product successful");
+  } else {
+    return res.status(403).send("Activate product failed");
+  }
+})
+
 router.post("/create-spec", auth, async (req, res) => {
   const {spec} = req.body;
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
