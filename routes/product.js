@@ -103,22 +103,50 @@ router.post("/:product_id/activate", auth, async (req, res) => {
 router.post("/create-spec", auth, async (req, res) => {
   const {spec} = req.body;
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const result = productModel.createSpec(spec, partner.partner_id);
-  if (result) {
-    res.status(200).send("Create spec successful");
+  const result = await productModel.createSpec({
+    spec: spec, 
+    partner_id: partner.partner_id
+  });
+  if (result === -1) {
+    res.status(200).json({
+      status: 0,
+      message: "Spec already exists"
+    });
+  } else if (result) {
+    res.status(200).json({
+      status: 1,
+      message: "Create spec successful"
+    });
   } else {
-    res.status(403).send("Create spec failed");
+    res.status(403).json({
+      status: -1,
+      message: "Create spec failed"
+    });
   }
 });
 
 router.post("/create-unit", auth, async (req, res) => {
   const {unit} = req.body;
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const result = productModel.createProductUnit(unit, partner.partner_id);
-  if (result) {
-    res.status(200).send("Create unit successful");
+  const result = await productModel.createProductUnit({
+    unit: unit, 
+    partner_id: partner.partner_id
+  });
+  if (result === -1) {
+    res.status(200).json({
+      status: 0,
+      message: "Unit already exists"
+    });
+  } else if (result) {
+    res.status(200).json({
+      status: 1,
+      message: "Create unit successful"
+    });
   } else {
-    res.status(403).send("Create unit failed");
+    res.status(403).json({
+      status: -1,
+      message: "Create unit failed"
+    });
   }
 });
 

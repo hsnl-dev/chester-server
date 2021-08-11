@@ -26,14 +26,14 @@ class VendorModel {
         .first();
       if (vendorExist) {
         console.log("Vendor already exist");
-        return vendorExist[0];
+        return -1;
       } else {
         const result = await this.db('vendor').insert({
           name: vendor_name,
           note: note,
           partner_id: partner_id
         });
-        return result[0];
+        return result;
       }
     } catch (err) {
       console.log(err);

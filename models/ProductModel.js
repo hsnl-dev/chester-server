@@ -124,15 +124,15 @@ class ProductModel {
   }
 
   async createSpec(data) {
-    const {partner_id, spec} = data;
+    const {spec, partner_id} = data;
     try {
       const specExist = await this.db('product_spec')
-        .where('partner_id', partner_id)
         .where('spec', spec)
+        .where('partner_id', partner_id)
         .first();
       if (specExist) {
         console.log("Spec already exist");
-        return specExist;
+        return -1;
       } else {
         const result = await this.db('product_spec').insert({
           partner_id: partner_id,
@@ -158,15 +158,15 @@ class ProductModel {
   }
 
   async createProductUnit(data) {
-    const {partner_id, unit} = data;
+    const {unit, partner_id} = data;
     try {
       const unitExist = await this.db('product_unit')
-        .where('partner_id', partner_id)
         .where('unit', unit)
+        .where('partner_id', partner_id)
         .first();
       if (unitExist) {
         console.log("Unit already exist");
-        return unitExist;
+        return -1;
       } else {
         const result = await this.db('product_unit').insert({
           partner_id: partner_id,

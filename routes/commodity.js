@@ -107,15 +107,26 @@ router.post("/:commodity_id/delete", auth, async (req, res) => {
 router.post("/create-vendor", auth, async (req, res) => {
   const {vendor_name, note} = req.body;
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const result = vendorModel.createVendor({
+  const result = await vendorModel.createVendor({
     vendor_name: vendor_name,
     note: note,
     partner_id: partner.partner_id
   });
-  if (result) {
-    res.status(200).send("Create vendor successful");
+  if (result === -1) {
+    res.status(200).json({
+      status: 0,
+      message: "Vendor already exists"
+    });
+  } else if (result) {
+    res.status(200).json({
+      status: 1,
+      message: "Create vendor successful"
+    });
   } else {
-    res.status(403).send("Create vendor failed");
+    res.status(403).json({
+      status: -1,
+      message: "Create vendor failed"
+    });
   }
 });
 
