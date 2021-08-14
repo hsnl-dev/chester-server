@@ -4,6 +4,7 @@ const PartnerModel = require('../models/PartnerModel');
 const VendorModel = require('../models/VendorModel');
 const CommodityModel = require('../models/CommodityModel');
 const auth = require('../middlewares/auth');
+const { checkPreferences } = require('joi');
 
 const router = express.Router();
 const partnerModel = new PartnerModel();
@@ -33,7 +34,7 @@ router.get('/', auth, async(req, res, next) => {
   res.status(200).send(result);
 });
 
-router.post('/create', auth, async(req, res, next) => {
+router.post('/create', auth, async (req, res, next) => {
   const {vendor_id, name, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note} = req.body;
   //const partner = await partnerModel.getPartnerByUserId(req.user_id);
   //const vendor =  await vendorModel.getVendorByName(vendor_name, partner.partner_id);
@@ -58,6 +59,31 @@ router.post('/create', auth, async(req, res, next) => {
   }
 });
 
+router.post('/create-multiple', auth, async (req, res) => {
+  const {commodities, vendor_id} = req.body;
+  for (const com of commodities) {
+    const success = await commodityModel.createCommodity({
+      vendor_id: parseInt(vendor_id),
+      name: com.name,
+      batch_no: com.batch_no,
+      origin: com.origin,
+      brand: com.brand,
+      amount: com.amount,
+      unit: com.unit,
+      MFG: com.MFG,
+      EXP: com.EXP,
+      unit_price: com.unit_price,
+      gross_price: com.gross_price,        
+      note: com.note
+    });
+    if (!success) {
+      return res.status(403).send("Create commodities failed");
+    }
+  }
+
+  return res.status(200).send("Create commodities successful");
+});
+
 router.get("/:commodity_id/view", auth, async (req, res) => {
   let commodity = await commodityModel.getCommodityById(req.params.commodity_id);
   if (commodity) {
@@ -70,12 +96,12 @@ router.get("/:commodity_id/view", auth, async (req, res) => {
 });
 
 router.post("/:commodity_id/edit", auth, async (req, res) => {
-  const {vendor_name, name, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note} = req.body;
-  const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const vendor =  await vendorModel.getVendorByName(vendor_name, partner.partner_id);
+  const {vendor_id, name, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note} = req.body;
+  //const partner = await partnerModel.getPartnerByUserId(req.user_id);
+  //const vendor =  await vendorModel.getVendorByName(vendor_name, partner.partner_id);
   const success = await commodityModel.updateCommodity({
     commodity_id: req.params.commodity_id,
-    vendor_id: vendor.id,
+    vendor_id: vendor_id,
     name: name,
     batch_no: batch_no,
     origin: origin,
