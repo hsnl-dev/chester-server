@@ -34,7 +34,8 @@ class UserModel {
         password: md5.update(password).digest('hex'),
         name: name.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, ''),
         phone: phone,
-        email: email
+        email: email,
+        activate: 1
       });
       return result[0];
     } catch (err) {
@@ -47,7 +48,7 @@ class UserModel {
     const {user_id, username, role, name, phone, email} = data;
     try {
       const result = await this.db('users')
-        .where('user_id', user_id)
+        .where('id', user_id)
         .update({
           username: username,
           role: role,
@@ -62,11 +63,27 @@ class UserModel {
     }
   }
 
-  async deleteUser(user_id) {
+  async activateUser(user_id) {
     try {
       const result = await this.db('users')
         .where('id', user_id)
-        .del();
+        .update({
+          activate: 1
+        });
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async deactivateUser(user_id) {
+    try {
+      const result = await this.db('users')
+        .where('id', user_id)
+        .update({
+          activate: 0
+        });
       return result;
     } catch (err) {
       console.log(err);
@@ -114,6 +131,18 @@ class UserModel {
       console.log(err);
       return null;
     }
+  }
+
+  async isActivate(user_id) {
+    try {
+      const result = await this.db('users')
+        .where('id', user_id)
+        .first()
+      return result[7];
+    } catch (err) {
+      console.log(err);
+      return null;
+    } 
   }
 
   async addAccessToken(data) {

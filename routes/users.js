@@ -25,7 +25,8 @@ router.get('/', auth, async(req, res, next) => {
       username: user.username,
       name: user.name,
       phone: user.phone,
-      email: user.email
+      email: user.email,
+      activate: user.activate
     }
     member_arr.push(data);
   }
@@ -59,18 +60,23 @@ router.post('/signin', async(req, res, next) => {
     .format('YYYY-MM-DD HH:mm:ss');
   const user = await userModel.validAccount(username, password);
   if (user) {
-    const success = await userModel.addAccessToken({
-      user_id: user.id,
-      token: generatedToken,
-      expireAt: expireTime,
-    });
-    if (success) {
-      res.status(200).send({
-        access_token: generatedToken,
-        expire_at: expireTime,
+    const isActivate = await userModel.isActivate(user.id);
+    if (isActivate) {
+      const success = await userModel.addAccessToken({
+        user_id: user.id,
+        token: generatedToken,
+        expireAt: expireTime,
       });
+      if (success) {
+        res.status(200).send({
+          access_token: generatedToken,
+          expire_at: expireTime,
+        });
+      } else {
+        res.status(400).send('Add access token failed');
+      }
     } else {
-      res.status(400).send('Add access token failed');
+      res.status(403).send("User is not activate");
     }
   } else {
     res.status(403).send('登入失敗');
@@ -91,7 +97,8 @@ router.post('/create', auth, async(req, res, next) => {
       name: name,
       phone: phone,
       password: "12345678",
-      email: email
+      email: email,
+      activate: 1
     });
     if (!success) return res.status(400).send("Create user failed");
     
@@ -162,15 +169,38 @@ router.post("/:user_id/edit", auth, async (req, res) => {
   }
 });
 
-router.post("/:user_id/delete", auth, async (req, res) => {
-  console.log(req.params.user_id);
-  const success = await userModel.deleteUser(req.params.user_id);
-  const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const success2 = await partnerModel.deleteMember(partner.partner_id, req.params.user_id);
-  if (success && success2) {
-    return res.status(200).send("Delete user successful");
+router.post("/:user_id/deactivate", auth, async (req, res) => {
+  const manager_id = req.user_id;
+  const manager = await userModel.getUserById(manager_id);
+  const manager_partner = await partnerModel.getPartnerByUserId(manager_id);
+  const user_partner = await partnerModel.getPartnerByUserId(req.params.user_id);
+  if (manager.role > 1 || manager_partner.partner_id !== user_partner.partner_id) {
+    return res.status(403).send("Not authorized");
+  }
+  if (manager.role > 1) {
+    return res.status(403).send("Not authorized");
+  }
+  const success = await userModel.deactivateUser(req.params.user_id);
+  if (success) {
+    return res.status(200).send("Deactivate user successful");
   } else {
-    return res.status(403).send("Delete user failed");
+    return res.status(403).send("Deactivate user failed");
+  }
+});
+
+router.post("/:user_id/activate", auth, async (req, res) => {
+  const manager_id = req.user_id;
+  const manager = await userModel.getUserById(manager_id);
+  const manager_partner = await partnerModel.getPartnerByUserId(manager_id);
+  const user_partner = await partnerModel.getPartnerByUserId(req.params.user_id);
+  if (manager.role > 1 || manager_partner.partner_id !== user_partner.partner_id) {
+    return res.status(403).send("Not authorized");
+  }
+  const success = await userModel.activateUser(req.params.user_id);
+  if (success) {
+    return res.status(200).send("Activate user successful");
+  } else {
+    return res.status(403).send("Activate user failed");
   }
 });
 

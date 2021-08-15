@@ -93,12 +93,75 @@ class CommodityModel {
     }
   }
 
-  async deleteCommodity(commodity_id) {
+  async returnCommodity(data) {
+    try {
+      const {commodity_id, amount, unit, reason} = data;
+      const commodity = await this.getCommodityById(commodity_id);
+      const update_amount = (commodity.amount - amount).toFixed(2);
+      if (update_amount < 0) {
+        return -1;
+      }
+      const success = await this.updateAmount(commodity_id, update_amount);
+      if (success) {
+        const result = await this.db('commodity_return').insert({
+          commodity_id: commodity_id,
+          amount: amount,
+          unit: unit,
+          reason: reason
+        });
+        if (result) {
+          return result;
+        } else {
+          await this.updateAmount(commodity_id, commodity.amount);
+          return null;
+        }
+      } else {
+        return null;
+      }
+      
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+    
+  async discardCommodity(data) {
+    try {
+      const {commodity_id, amount, unit, reason} = data;
+      const commodity = await this.getCommodityById(commodity_id);
+      const update_amount = (commodity.amount - amount).toFixed(2);
+      if (update_amount < 0) {
+        return -1;
+      }
+      const success = await this.updateAmount(commodity_id, update_amount);
+      if (success) {
+        const result = await this.db('commodity_discard').insert({
+          commodity_id: commodity_id,
+          amount: amount,
+          unit: unit,
+          reason: reason
+        });
+        if (result) {
+          return result;
+        } else {
+          await this.updateAmount(commodity_id, commodity.amount);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  } 
+
+  async updateAmount(commodity_id, amount) {
     try {
       const result = await this.db('commodity')
         .where('id', commodity_id)
         .update({
-          activate: 0
+          amount: amount
         });
       return result;
     } catch (err) {

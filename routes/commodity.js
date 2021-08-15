@@ -121,12 +121,55 @@ router.post("/:commodity_id/edit", auth, async (req, res) => {
   }
 });
 
-router.post("/:commodity_id/delete", auth, async (req, res) => {
-  const success = await commodityModel.deleteCommodity(req.params.commodity_id);
-  if (success) {
-    return res.status(200).send("Delete commodity successful");
+router.post("/:commodity_id/return", auth, async (req, res) => {
+  const {amount, unit, reason} = req.body;
+  const success = await commodityModel.returnCommodity({
+    commodity_id: req.params.commodity_id,
+    amount: amount,
+    unit: unit,
+    reason: reason
+  });
+  if (success === -1) {
+    return res.status(403).json({
+      status: 0,
+      message: "Return amount cannot be larger than stock amount"
+    });
+  } else if (success) {
+    return res.status(200).json({
+      status: 1,
+      message: "Return commodity successful"
+    });
   } else {
-    return res.status(403).send("Delete commodity failed");
+    return res.status(403).json({
+      status: -1, 
+      message: "Return commodity failed"
+    });
+  }
+});
+
+router.post("/:commodity_id/discard", auth, async (req, res) => {
+  const {amount, unit, reason} = req.body;
+  const success = await commodityModel.discardCommodity({
+    commodity_id: req.params.commodity_id,
+    amount: amount,
+    unit: unit,
+    reason: reason
+  });
+  if (success === -1) {
+    return res.status(403).json({
+      status: 0,
+      message: "Discard amount cannot be larger than stock amount"
+    });
+  } else if (success) {
+    return res.status(200).json({
+      status: 1,
+      message: "Discard commodity successful"
+    });
+  } else {
+    return res.status(403).json({
+      status: -1, 
+      message: "Discard commodity failed"
+    });
   }
 });
 
