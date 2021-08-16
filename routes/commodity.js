@@ -35,12 +35,11 @@ router.get('/', auth, async(req, res, next) => {
 });
 
 router.post('/create', auth, async (req, res, next) => {
-  const {vendor_id, name, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note} = req.body;
-  //const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  //const vendor =  await vendorModel.getVendorByName(vendor_name, partner.partner_id);
+  const {vendor_id, name, trace_no, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note} = req.body;
   const success = await commodityModel.createCommodity({
     vendor_id: parseInt(vendor_id),
     name: name,
+    trace_no: trace_no,
     batch_no: batch_no,
     origin: origin,
     brand: brand,
@@ -65,6 +64,7 @@ router.post('/create-multiple', auth, async (req, res) => {
     const success = await commodityModel.createCommodity({
       vendor_id: parseInt(vendor_id),
       name: com.name,
+      trace_no: com.trace_no,
       batch_no: com.batch_no,
       origin: com.origin,
       brand: com.brand,
@@ -97,12 +97,11 @@ router.get("/:commodity_id/view", auth, async (req, res) => {
 
 router.post("/:commodity_id/edit", auth, async (req, res) => {
   const {vendor_id, name, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note} = req.body;
-  //const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  //const vendor =  await vendorModel.getVendorByName(vendor_name, partner.partner_id);
   const success = await commodityModel.updateCommodity({
     commodity_id: req.params.commodity_id,
     vendor_id: vendor_id,
     name: name,
+    trace_no: trace_no,
     batch_no: batch_no,
     origin: origin,
     brand: brand,

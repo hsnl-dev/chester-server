@@ -138,7 +138,7 @@ class UserModel {
       const result = await this.db('users')
         .where('id', user_id)
         .first()
-      return result[7];
+      return result.activate;
     } catch (err) {
       console.log(err);
       return null;
