@@ -204,4 +204,36 @@ router.post("/:user_id/activate", auth, async (req, res) => {
   }
 });
 
+router.get("/partner-machines", auth, async (req, res) => {
+  const partner = await partnerModel.getPartnerByUserId(req.user_id);
+  const result = await partnerModel.getMachines(partner.partner_id);
+  if (result.length > 0) {
+    const machines = result.map(function(machine) {
+      return {
+        "machine_name": machine.machine_name,
+        "machine_no": machine.machine_no
+      };
+    });
+    return res.status(200).send(machines);
+  } else {
+    return res.status(403).send("Fail to get machines");
+  }
+});
+
+router.post("/add-machines", auth, async (req, res) => {
+  const {machine_name, machine_no} = req.body;
+  const partner = await partnerModel.getPartnerByUserId(req.user_id);
+  const success = await partnerModel.addMachine({
+    partner_id: partner.partner_id,
+    machine_name: machine_name,
+    machine_no: machine_no
+  });
+  
+  if (success) {
+    return res.status(200).send("Add machine successful");
+  } else {
+    return res.status(403).send("Add machine failed");
+  }
+});
+
 module.exports = router;

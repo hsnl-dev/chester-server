@@ -11,12 +11,10 @@ const productModel = new ProductModel();
 router.get('/', auth, async(req, res, next) => {
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
   const products =  await productModel.getProducts(partner.partner_id);
-  const specs = await productModel.getSpecs(partner.partner_id);
-  const units = await productModel.getProductUnits(partner.partner_id);
+  const options = await productModel.getOptions();
   const result = {
     products: products,
-    specs: specs,
-    units: units
+    options: options
   };
   console.log(result);
   res.status(200).send(result);
@@ -100,53 +98,13 @@ router.post("/:product_id/activate", auth, async (req, res) => {
   }
 })
 
-router.post("/create-spec", auth, async (req, res) => {
-  const {spec} = req.body;
-  const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const result = await productModel.createSpec({
-    spec: spec, 
-    partner_id: partner.partner_id
-  });
-  if (result === -1) {
-    res.status(200).json({
-      status: 0,
-      message: "Spec already exists"
-    });
-  } else if (result) {
-    res.status(200).json({
-      status: 1,
-      message: "Create spec successful"
-    });
+router.get("/options", auth, async (req, res) => {
+  const result = await productModel.getOptions();
+  console.log(result);
+  if (result) {
+    return res.status(200).send(result);
   } else {
-    res.status(403).json({
-      status: -1,
-      message: "Create spec failed"
-    });
-  }
-});
-
-router.post("/create-unit", auth, async (req, res) => {
-  const {unit} = req.body;
-  const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const result = await productModel.createProductUnit({
-    unit: unit, 
-    partner_id: partner.partner_id
-  });
-  if (result === -1) {
-    res.status(200).json({
-      status: 0,
-      message: "Unit already exists"
-    });
-  } else if (result) {
-    res.status(200).json({
-      status: 1,
-      message: "Create unit successful"
-    });
-  } else {
-    res.status(403).json({
-      status: -1,
-      message: "Create unit failed"
-    });
+    return res.status(403).send("Failed to get options");
   }
 });
 

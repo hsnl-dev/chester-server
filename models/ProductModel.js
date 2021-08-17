@@ -1,3 +1,4 @@
+const e = require('express');
 const mysql = require('knex');
 
 const {DB_URL, DB_USERNAME, DB_PASSWORD} = require('../config');
@@ -123,68 +124,17 @@ class ProductModel {
     }
   }
 
-  async createSpec(data) {
-    const {spec, partner_id} = data;
+  async getOptions() {
     try {
-      const specExist = await this.db('product_spec')
-        .where('spec', spec)
-        .where('partner_id', partner_id)
-        .first();
-      if (specExist) {
-        console.log("Spec already exist");
-        return -1;
-      } else {
-        const result = await this.db('product_spec').insert({
-          partner_id: partner_id,
-          spec: spec
-        });
-        return result;
-      }
-    } catch (err) {
-      console.log(err);
-      return null;
-    }
-  }
-
-  async getSpecs(partner_id) {
-    try {
-      const result = await this.db('product_spec')
-        .where('partner_id', partner_id);
-      return result;
-    } catch (err) {
-      console.log(err);
-      return null;
-    }
-  }
-
-  async createProductUnit(data) {
-    const {unit, partner_id} = data;
-    try {
-      const unitExist = await this.db('product_unit')
-        .where('unit', unit)
-        .where('partner_id', partner_id)
-        .first();
-      if (unitExist) {
-        console.log("Unit already exist");
-        return -1;
-      } else {
-        const result = await this.db('product_unit').insert({
-          partner_id: partner_id,
-          unit: unit
-        });
-        return result;
-      }
-    } catch (err) {
-      console.log(err);
-      return null;
-    }
-  }
-
-  async getProductUnits(partner_id) {
-    try {
-      const result = await this.db('product_unit')
-        .where('partner_id', partner_id);
-      return result;
+      const result = await this.db('product_options');
+      const product_unit = result.filter(e => e.type === 'product_unit').map(e => e.value);
+      const weight_unit = result.filter(e => e.type === 'weight_unit').map(e => e.value);
+      const storage = result.filter(e => e.type === 'storage').map(e => e.value);
+      return {
+        product_unit: product_unit,
+        weight_unit: weight_unit,
+        storage: storage
+      };
     } catch (err) {
       console.log(err);
       return null;

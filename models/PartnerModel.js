@@ -98,6 +98,32 @@ class PartnerModel {
       return null;
     }
   }
+
+  async addMachine(data) {
+    try {
+      const {partner_id, machine_name, machine_no} = data;
+      const result = await this.db('partner_machine').insert({
+        partner_id: partner_id,
+        machine_name: machine_name,
+        machine_no: machine_no
+      });
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async getMachines(partner_id) {
+    try {
+      const result = await this.db('partner_machine')
+        .where('partner_id', partner_id);
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
 }
 
 module.exports = PartnerModel;
