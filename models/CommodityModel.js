@@ -50,7 +50,6 @@ class CommodityModel {
       const result = await this.db('commodity')
         .where('id', commodity_id)
         .update({
-          vendor_id: vendor_id,
           name: name,
           trace_no: trace_no,
           batch_no: batch_no,
@@ -112,7 +111,7 @@ class CommodityModel {
           reason: reason
         });
         if (result) {
-          return result;
+          return update_amount;
         } else {
           await this.updateAmount(commodity_id, commodity.amount);
           return null;
@@ -120,7 +119,6 @@ class CommodityModel {
       } else {
         return null;
       }
-      
     } catch (err) {
       console.log(err);
       return null;
@@ -144,7 +142,7 @@ class CommodityModel {
           reason: reason
         });
         if (result) {
-          return result;
+          return update_amount;
         } else {
           await this.updateAmount(commodity_id, commodity.amount);
           return null;

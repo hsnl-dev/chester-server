@@ -96,10 +96,9 @@ router.get("/:commodity_id/view", auth, async (req, res) => {
 });
 
 router.post("/:commodity_id/edit", auth, async (req, res) => {
-  const {vendor_id, name, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note} = req.body;
+  const {name, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note} = req.body;
   const success = await commodityModel.updateCommodity({
     commodity_id: req.params.commodity_id,
-    vendor_id: vendor_id,
     name: name,
     trace_no: trace_no,
     batch_no: batch_no,
@@ -136,6 +135,7 @@ router.post("/:commodity_id/return", auth, async (req, res) => {
   } else if (success) {
     return res.status(200).json({
       status: 1,
+      update_amount: success,
       message: "Return commodity successful"
     });
   } else {
@@ -162,6 +162,7 @@ router.post("/:commodity_id/discard", auth, async (req, res) => {
   } else if (success) {
     return res.status(200).json({
       status: 1,
+      update_amount: success,
       message: "Discard commodity successful"
     });
   } else {
@@ -169,6 +170,57 @@ router.post("/:commodity_id/discard", auth, async (req, res) => {
       status: -1, 
       message: "Discard commodity failed"
     });
+  }
+});
+
+router.post("/return-multiple", auth, async (req, res) => {
+  const {commodity_arr, reason} = req.body;
+  try {
+    let update_arr = [];
+    console.log(commodity_arr);
+    for (e of commodity_arr) {
+      const update_amount = await commodityModel.returnCommodity({
+        commodity_id: e.commodity_id,
+        amount: e.amount,
+        unit: e.unit,
+        reason: reason
+      });
+      console.log(update_amount);
+      update_arr.push({
+        commodity_id: e.commodity_id,
+        update_amount: parseFloat(update_amount)
+      });
+    }
+    console.log(update_arr);
+    return res.status(200).json({
+      update_arr: update_arr
+    });
+  } catch (err) {
+    return res.status(403).send("Return all failed");
+  }
+});
+
+router.post("/discard-multiple", auth, async (req, res) => {
+  const {commodity_arr, reason} = req.body;
+  try {
+    let update_arr = [];
+    for (e of commodity_arr) {
+      const update_amount = await commodityModel.discardCommodity({
+        commodity_id: e.commodity_id,
+        amount: e.amount,
+        unit: e.unit,
+        reason: reason
+      });
+      update_arr.push({
+        commodity_id: e.commodity_id,
+        update_amount: parseFloat(update_amount)
+      });
+    }
+    return res.status(200).json({
+      update_arr: update_arr
+    });
+  } catch (err) {
+    return res.status(403).send("Return all failed");
   }
 });
 

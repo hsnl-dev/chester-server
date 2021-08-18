@@ -17,6 +17,7 @@ router.get('/', auth, async(req, res, next) => {
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
   const members = await partnerModel.getPartnerMembers(partner.partner_id);
   let member_arr = [];
+  console.log(members);
   for (let i = 0; i < members.length; i++) {
     const user = await userModel.getUserById(members[i].user_id);
     const data = {
@@ -42,10 +43,17 @@ router.get('/', auth, async(req, res, next) => {
   }
 });
 
-router.get('/roles', auth, async(req, res, next) => {
+router.get('/role', auth, async(req, res, next) => {
   console.log(req.user_id);
   const user = await userModel.getUserById(req.user_id);
-  res.status(200).send(user.role.toString());
+  if (user) {
+    const role = {
+      role: user.role
+    };
+    res.status(200).send(role);
+  } else {
+    res.status(403).send("Failed to get user role");
+  }
 });
 
 router.post('/signin', async(req, res, next) => {
@@ -69,6 +77,7 @@ router.post('/signin', async(req, res, next) => {
       });
       if (success) {
         res.status(200).send({
+          user_id: user.id,
           access_token: generatedToken,
           expire_at: expireTime,
         });
@@ -228,7 +237,7 @@ router.post("/add-machines", auth, async (req, res) => {
     machine_name: machine_name,
     machine_no: machine_no
   });
-  
+
   if (success) {
     return res.status(200).send("Add machine successful");
   } else {
