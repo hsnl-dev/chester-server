@@ -11,6 +11,7 @@ const usersRouter = require('./routes/users');
 const passwordResetRouter = require('./routes/passwordReset');
 const commodityRouter = require('./routes/commodity');
 const productRouter = require('./routes/product');
+const traceRouter = require('./routes/trace');
 
 const app = express();
 
@@ -36,5 +37,6 @@ app.use('/users', usersRouter);
 app.use('/password-reset', passwordResetRouter);
 app.use('/commodity', commodityRouter);
 app.use('/product', productRouter);
+app.use('/trace', traceRouter);
 
 module.exports = app;

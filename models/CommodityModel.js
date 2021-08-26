@@ -29,6 +29,7 @@ class CommodityModel {
         origin: origin,
         brand: brand,
         amount: amount,
+        used: 0,
         unit: unit,
         MFG: MFG,
         EXP: EXP,
@@ -163,6 +164,32 @@ class CommodityModel {
         .update({
           amount: amount
         });
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async updateUsed(commodity_id, amount, operation) {
+    try {
+      let result;
+      if (operation === 1) {
+        result = await this.db('commodity')
+        .where('id', commodity_id)
+        .increment({
+          used: amount
+        });
+      } else if (operation === -1) {
+        result = await this.db('commodity')
+        .where('id', commodity_id)
+        .decrement({
+          used: amount
+        });
+      } else {
+        console.log("Unknown operation");
+        return null;
+      }
       return result;
     } catch (err) {
       console.log(err);

@@ -1,4 +1,3 @@
-const e = require('express');
 const mysql = require('knex');
 
 const {DB_URL, DB_USERNAME, DB_PASSWORD} = require('../config');
