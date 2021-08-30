@@ -101,11 +101,11 @@ class PartnerModel {
 
   async addMachine(data) {
     try {
-      const {partner_id, machine_name, machine_no} = data;
+      const {partner_id, machine_name, machine_id} = data;
       const result = await this.db('partner_machine').insert({
         partner_id: partner_id,
         machine_name: machine_name,
-        machine_no: machine_no
+        machine_id: machine_id
       });
       return result;
     } catch (err) {

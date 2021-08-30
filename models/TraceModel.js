@@ -1,4 +1,5 @@
 const mysql = require('knex');
+const moment = require('moment-timezone');
 
 const {DB_URL, DB_USERNAME, DB_PASSWORD} = require('../config');
 
@@ -19,12 +20,12 @@ class TraceModel {
 
   async createTraceability(trace) {
     try {
-      const {partner_id, product_no, amount, create_date} = trace;
+      const {partner_id, product_id, amount, create_date} = trace;
       const result = await this.db('traceability').insert({
         partner_id: partner_id,
-        product_no: product_no,
+        product_id: product_id,
         amount: amount,
-        create_date: create_date,
+        create_date: moment(create_date).tz("Asia/Taipei").format("YYYY-MM-DD HH:mm:ss"),
         print_amount: 0
       });
       return result[0];
@@ -66,7 +67,7 @@ class TraceModel {
         const result2 = await this.db('trace_commodity')
           .where('trace_id', trace_id)
           .del();
-        return result2;
+        return true;
       }
       return false;
     } catch (err) {
@@ -103,7 +104,39 @@ class TraceModel {
     }
   }
 
-  async updatePrintAmount(data) {
+  async setAmountPerMachine(data) {
+    try {
+      const {operation, trace_id, machine_id, amount} = data;
+      let print_amount = 0;
+      let op = "";
+      if (operation === 0) {
+        print_amount = amount;
+        op = "reprint";
+      } else if (operation === 1) {
+        print_amount = amount;
+        op = "add";
+      } else if (operation === -1) {
+        print_amount = -amount;
+        op = "discard";
+      } else {
+        console.log("Unknown operation");
+        return null;
+      }
+      const result = await this.db('trace_print')
+        .insert({
+          trace_id: trace_id,
+          machine_id: machine_id,
+          amount: print_amount,
+          operation: op
+        });
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async updateTotalAmount(data) {
     try {
       const {trace_id, amount, operation} = data;
       let result;

@@ -15,5 +15,8 @@ module.exports = {
 
     // Gmail
     EMAIL_USERNAME: process.env.EMAIL_USERNAME || 'ktgintkd@gmail.com',
-    EMAIL_PASSWORD: process.env.EMAIL_PASSWORD || 'ucrbuyaszmkakwtw'
+    EMAIL_PASSWORD: process.env.EMAIL_PASSWORD || 'ucrbuyaszmkakwtw',
+
+    // Machine
+    MACHINE_URL: process.env.MACHINE_URL || 'https://www.imember.me/iMemberService/api_backend/queryMachineInfo'
 }

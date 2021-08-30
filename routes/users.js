@@ -46,6 +46,7 @@ router.get('/', auth, async(req, res, next) => {
 router.get('/role', auth, async(req, res, next) => {
   console.log(req.user_id);
   const user = await userModel.getUserById(req.user_id);
+  console.log(user);
   if (user) {
     const role = {
       role: user.role
@@ -230,12 +231,12 @@ router.get("/partner-machines", auth, async (req, res) => {
 });
 
 router.post("/add-machines", auth, async (req, res) => {
-  const {machine_name, machine_no} = req.body;
+  const {machine_name, machine_id} = req.body;
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
   const success = await partnerModel.addMachine({
     partner_id: partner.partner_id,
     machine_name: machine_name,
-    machine_no: machine_no
+    machine_id: machine_id
   });
 
   if (success) {
