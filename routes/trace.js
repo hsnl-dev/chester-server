@@ -57,8 +57,64 @@ router.post('/create', auth, async (req, res) => {
 
 router.get("/:trace_id/view", auth, async (req, res) => {
   const traceability = await traceModel.getTraceabilityById(req.params.trace_id);
+  const product = await productModel.getProductById(traceability.product_id);
+  const commodities = await traceModel.getTraceCommodities(req.params.trace_id);
+  let staple_food = []; 
+  let main_dish = [];
+  let side_dish = [];
+  let others = [];
+  for (element of commodities) {
+    const commodity = await commodityModel.getCommodityById(element.commodity_id);
+    if (element.type === 'staple_food') {
+      staple_food.push({
+        commodity_id: element.commodity_id,
+        commodity_name: commodity.name,
+        create_at: commodity.create_at,
+        amount: element.amount,
+        unit: commodity.unit
+      });
+    } else if (element.type === 'main_dish') {
+      main_dish.push({
+        commodity_id: element.commodity_id,
+        commodity_name: commodity.name,
+        create_at: commodity.create_at,
+        amount: element.amount,
+        unit: commodity.unit
+      });
+    } else if (element.type === 'side_dish') {
+      side_dish.push({
+        commodity_id: element.commodity_id,
+        commodity_name: commodity.name,
+        create_at: commodity.create_at,
+        amount: element.amount,
+        unit: commodity.unit
+      });
+    } else if (element.type === 'others') {
+      others.push({
+        commodity_id: element.commodity_id,
+        commodity_name: commodity.name,
+        create_at: commodity.create_at,
+        amount: element.amount,
+        unit: commodity.unit
+      });
+    } 
+  }
+
+  const result = {
+    trace_id: parseInt(req.params.trace_id),
+    create_date: traceability.create_date,
+    product_name: product.name,
+    amount: traceability.amount,
+    commodities: {
+      staple_food: staple_food,
+      main_dish: main_dish,
+      side_dish: side_dish,
+      others: others
+    }
+  }
+
   if (traceability) {
-    return res.status(200).send(traceability);
+    return res.status(200).send(result);
   } else {
     return res.status(403).send("Traceability not found");
   }
