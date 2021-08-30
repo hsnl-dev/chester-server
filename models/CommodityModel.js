@@ -47,7 +47,7 @@ class CommodityModel {
 
   async updateCommodity(commodity) {
     try {
-      const {commodity_id, vendor_id, name, trace_no, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note, update_at} = commodity;
+      const {commodity_id, name, trace_no, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note, update_at} = commodity;
       const result = await this.db('commodity')
         .where('id', commodity_id)
         .update({

@@ -96,7 +96,7 @@ router.get("/:commodity_id/view", auth, async (req, res) => {
 });
 
 router.post("/:commodity_id/edit", auth, async (req, res) => {
-  const {name, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note} = req.body;
+  const {name, trace_no, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note} = req.body;
   const success = await commodityModel.updateCommodity({
     commodity_id: req.params.commodity_id,
     name: name,
