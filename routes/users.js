@@ -221,9 +221,10 @@ router.get("/partner-machines", auth, async (req, res) => {
     const machines = result.map(function(machine) {
       return {
         "machine_name": machine.machine_name,
-        "machine_no": machine.machine_no
+        "machine_id": machine.machine_id
       };
     });
+    console.log(machines);
     return res.status(200).send(machines);
   } else {
     return res.status(403).send("Fail to get machines");
@@ -231,19 +232,20 @@ router.get("/partner-machines", auth, async (req, res) => {
 });
 
 router.post("/add-machines", auth, async (req, res) => {
-  const {machine_name, machine_id} = req.body;
+  const {machines} = req.body;
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const success = await partnerModel.addMachine({
-    partner_id: partner.partner_id,
-    machine_name: machine_name,
-    machine_id: machine_id
-  });
-
-  if (success) {
-    return res.status(200).send("Add machine successful");
-  } else {
+  try {
+    for (element of machines) {
+      const success = await partnerModel.addMachine({
+        partner_id: partner.partner_id,
+        machine_name: element.name,
+        machine_id: element.number
+      });
+    }
+  } catch (err) {
     return res.status(403).send("Add machine failed");
   }
+  return res.status(200).send("Add machine successful");
 });
 
 module.exports = router;

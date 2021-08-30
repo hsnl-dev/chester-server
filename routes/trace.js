@@ -44,8 +44,12 @@ router.post('/create', auth, async (req, res) => {
     amount: amount,
     create_date: create_date
   });
+  console.log(success);
   if (success) {
-    return res.status(200).send("Create traceability successful");
+    const result = {
+      trace_id: success
+    }
+    return res.status(200).send(result);
   } else {
     return res.status(403).send("Create traceability failed");
   }
