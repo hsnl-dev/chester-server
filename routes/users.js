@@ -94,7 +94,7 @@ router.post('/signin', async(req, res, next) => {
 });
 
 router.post('/create', auth, async(req, res, next) => {
-  const {username, role, name, phone, email, partner_name, partner_phone, food_industry_id, address, note} = req.body;
+  const {username, role, name, phone, email, partner_name, partner_phone, food_industry_id, address_city, address_district, address_street, note} = req.body;
   /* role: 1 (partner) => create user => create partner */
   /* role: 2 (clerk)  => create user => add member */
   console.log("email: ", email);
@@ -120,7 +120,9 @@ router.post('/create', auth, async(req, res, next) => {
         phone: partner_phone,
         owner_id:  userID,
         food_industry_id: food_industry_id,
-        address: address,
+        address_city: address_city,
+        address_district: address_district,
+        address_street: address_street,
         note: note
       });
       if (!partnerSuccess) return res.status(400).send("Create partner failed");
@@ -163,7 +165,7 @@ router.post('/create', auth, async(req, res, next) => {
 }); 
 
 router.post("/:user_id/edit", auth, async (req, res) => {
-  const {username, role, name, phone, email, partner_name, partner_phone, food_industry_id, address, note} = req.body;
+  const {username, role, name, phone, email, partner_name, partner_phone, food_industry_id, address_city, address_district, address_street, note} = req.body;
   const success = await userModel.updateUser({
     user_id: req.params.user_id,
     username: username,
