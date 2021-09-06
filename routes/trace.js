@@ -35,14 +35,16 @@ router.get('/', auth, async(req, res) => {
 });
 
 router.post('/create', auth, async (req, res) => {
-  const {product_id, amount, create_date} = req.body;
+  const {product_id, amount, create_date, time_period, batch} = req.body;
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
   console.log(product_id);
   const success = await traceModel.createTraceability({
     partner_id: partner.partner_id,
     product_id: product_id,
     amount: amount,
-    create_date: create_date
+    create_date: create_date,
+    time_period: time_period,
+    batch: batch
   });
   console.log(success);
   if (success) {
@@ -59,12 +61,19 @@ router.get("/:trace_id/view", auth, async (req, res) => {
   const traceability = await traceModel.getTraceabilityById(req.params.trace_id);
   const product = await productModel.getProductById(traceability.product_id);
   const commodities = await traceModel.getTraceCommodities(req.params.trace_id);
+  
   let staple_food = []; 
   let main_dish = [];
   let side_dish = [];
   let others = [];
   for (element of commodities) {
-    const commodity = await commodityModel.getCommodityById(element.commodity_id);
+    let commodity;
+    if (element.tmp === 0) {    // 選擇進貨
+      commodity = await commodityModel.getCommodityById(element.commodity_id);
+    } else {                    // 填寫進貨
+      commodity = await commodityModel.getTmpCommodityById(element.commodity_id); 
+    }
+    
     if (element.type === 'staple_food') {
       staple_food.push({
         commodity_id: element.commodity_id,
@@ -105,6 +114,8 @@ router.get("/:trace_id/view", auth, async (req, res) => {
     create_date: traceability.create_date,
     product_name: product.name,
     amount: traceability.amount,
+    time_period: traceability.time_period,
+    batch: traceability.batch,
     commodities: {
       staple_food: staple_food,
       main_dish: main_dish,
@@ -165,7 +176,8 @@ router.post('/:trace_id/add-commodity', auth, async (req, res) => {
       trace_id: req.params.trace_id,
       commodity_id: element.commodity_id,
       amount: element.amount,
-      type: element.type
+      type: element.type,
+      tmp: 0
     });
     if (!success) {
       return res.status(403).send("Failed to add commodity: insert error");
@@ -173,6 +185,39 @@ router.post('/:trace_id/add-commodity', auth, async (req, res) => {
     const success2 = await commodityModel.updateUsed(element.commodity_id, element.amount, 1);
     if (!success2) {
       return res.status(403).send("Failed to add commodity: update amount error");
+    }
+  };
+  return res.status(200).send("Add commodity successful");
+});
+
+router.post('/:trace_id/add-tmp-commodity', auth, async (req, res) => {
+  const {commodities_arr} = req.body;
+  console.log(commodities_arr);
+  for (element of commodities_arr) {
+    // insert to tmp_commodity (return id)
+    const tmp_id = await commodityModel.createTmpCommodity({
+      name: element.name,
+      trace_no: element.trace_no,
+      batch_no: element.batch_no,
+      origin: element.origin,
+      brand: element.brand,
+      amount: element.amount,
+      unit: element.unit,
+      note: element.note
+    });
+    if (!tmp_id) {
+      return res.status(403).send("Failed to add tmp commodity: insert error");
+    }
+
+    const success = await traceModel.addCommodity({
+      trace_id: req.params.trace_id,
+      commodity_id: tmp_id,
+      amount: element.amount,
+      type: element.type,
+      tmp: 1
+    });
+    if (!success) {
+      return res.status(403).send("Failed to add tmp commodity to trace: insert error");
     }
   };
   return res.status(200).send("Add commodity successful");

@@ -45,6 +45,26 @@ class CommodityModel {
     }
   }
 
+  async createTmpCommodity(commodity) {
+    try {
+      const {name, trace_no, batch_no, origin, brand, amount, unit, note} = commodity;
+      const result = await this.db('tmp_commodity').insert({
+        name: name,
+        trace_no: trace_no,
+        batch_no: batch_no,
+        origin: origin,
+        brand: brand,
+        amount: amount,
+        unit: unit,
+        note: note
+      });
+      return result[0];
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
   async updateCommodity(commodity) {
     try {
       const {commodity_id, name, trace_no, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note, update_at} = commodity;
@@ -75,6 +95,18 @@ class CommodityModel {
   async getCommodityById(commodity_id) {
     try {
       const result = await this.db('commodity')
+        .where('id', commodity_id)
+        .first();
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async getTmpCommodityById(commodity_id) {
+    try {
+      const result = await this.db('tmp_commodity')
         .where('id', commodity_id)
         .first();
       return result;

@@ -20,12 +20,14 @@ class TraceModel {
 
   async createTraceability(trace) {
     try {
-      const {partner_id, product_id, amount, create_date} = trace;
+      const {partner_id, product_id, amount, create_date, time_period, batch} = trace;
       const result = await this.db('traceability').insert({
         partner_id: partner_id,
         product_id: product_id,
         amount: amount,
         create_date: moment(create_date).tz("Asia/Taipei").format("YYYY-MM-DD HH:mm:ss"),
+        time_period: time_period,
+        batch: batch,
         print_amount: 0
       });
       return result[0];
@@ -78,13 +80,14 @@ class TraceModel {
 
   async addCommodity(data) {
     try {
-      const {trace_id, commodity_id, amount, type} = data;
+      const {trace_id, commodity_id, amount, type, tmp} = data;
       const result = await this.db('trace_commodity')
         .insert({
           trace_id: trace_id,
           commodity_id: commodity_id,
           amount: amount,
-          type: type
+          type: type,
+          tmp: tmp
         });
       return result;
     } catch (err) {
@@ -96,7 +99,7 @@ class TraceModel {
   async getTraceCommodities(trace_id) {
     try {
       const result = await this.db('trace_commodity')
-        .where('trace_id', trace_id)
+        .where('trace_id', trace_id);
       return result;
     } catch (err) {
       console.log(err);
