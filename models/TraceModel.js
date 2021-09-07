@@ -20,8 +20,9 @@ class TraceModel {
 
   async createTraceability(trace) {
     try {
-      const {partner_id, product_id, amount, create_date, time_period, batch} = trace;
+      const {trace_no, partner_id, product_id, amount, create_date, time_period, batch} = trace;
       const result = await this.db('traceability').insert({
+        trace_no: trace_no,
         partner_id: partner_id,
         product_id: product_id,
         amount: amount,
@@ -51,7 +52,7 @@ class TraceModel {
   async getTraceabilityById(trace_id) {
     try {
       const result = await this.db('traceability')
-        .where('id', trace_id)
+        .where('trace_no', trace_id)
         .first();
       return result;
     } catch (err) {
@@ -63,11 +64,11 @@ class TraceModel {
   async deleteTraceability(trace_id) {
     try {
       const result = await this.db('traceability')
-        .where('id', trace_id)
+        .where('trace_no', trace_id)
         .del();
       if (result) {
         const result2 = await this.db('trace_commodity')
-          .where('trace_id', trace_id)
+          .where('id', trace_id)
           .del();
         return true;
       }
@@ -166,6 +167,27 @@ class TraceModel {
         console.log("Unknown operation");
         return null;
       }
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async setTraceMachineInfo (data) {
+    try {
+      const {trace_no, machine_id, temperature, timestamp, product_no, vendor_name, vendor_address, vendor_phone, vendor_fdaId} = data;
+      const result = await this.db('trace_machine_info').insert({
+        trace_no: trace_no,
+        machine_id: machine_id,
+        temperature: temperature,
+        timestamp: timestamp,
+        product_no: product_no,
+        vendor_name: vendor_name,
+        vendor_address: vendor_address,
+        vendor_phone: vendor_phone,
+        vendor_fdaId: vendor_fdaId
+      });
       return result;
     } catch (err) {
       console.log(err);

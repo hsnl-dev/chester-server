@@ -33,3 +33,25 @@ router.post('/product/:product_no', async (req, res) => {
   
 
 });
+
+router.post('/machine-info', async (req, res) => {
+  const {trace_no, machine_id, temperature, timestamp, product_no, vendor_name, vendor_address, vendor_phone, vendor_fdaId} = req.body;
+  const success = await traceModel.setTraceMachineInfo({
+    trace_no: trace_no,
+    machine_id: machine_id,
+    temperature: temperature,
+    timestamp: timestamp,
+    product_no: product_no,
+    vendor_name: vendor_name,
+    vendor_address: vendor_address,
+    vendor_phone: vendor_phone,
+    vendor_fdaId: vendor_fdaId
+  });
+  if (success) {
+    return res.status(200).send("Succeed");
+  } else {
+    return res.status(403).send("Failed");
+  }
+});
+
+module.exports = router;

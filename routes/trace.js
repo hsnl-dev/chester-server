@@ -1,4 +1,5 @@
 const express = require('express');
+const moment = require('moment');
 
 const PartnerModel = require('../models/PartnerModel');
 const VendorModel = require('../models/VendorModel');
@@ -37,19 +38,22 @@ router.get('/', auth, async(req, res) => {
 router.post('/create', auth, async (req, res) => {
   const {product_id, amount, create_date, time_period, batch} = req.body;
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  console.log(product_id);
+  const product = await productModel.getProductById(product_id);
+  const trace_no = moment(create_date).format('YYYYMMDD') + time_period[0].value + batch + product.product_no;
+  console.log(trace_no);
   const success = await traceModel.createTraceability({
+    trace_no: trace_no,
     partner_id: partner.partner_id,
     product_id: product_id,
     amount: amount,
     create_date: create_date,
-    time_period: time_period,
+    time_period: time_period[0].value,
     batch: batch
   });
-  console.log(success);
+
   if (success) {
     const result = {
-      trace_id: success
+      trace_id: trace_no
     }
     return res.status(200).send(result);
   } else {
@@ -110,7 +114,7 @@ router.get("/:trace_id/view", auth, async (req, res) => {
   }
 
   const result = {
-    trace_id: parseInt(req.params.trace_id),
+    trace_id: req.params.trace_id,
     create_date: traceability.create_date,
     product_name: product.name,
     amount: traceability.amount,
