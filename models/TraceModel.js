@@ -176,13 +176,14 @@ class TraceModel {
 
   async setTraceMachineInfo (data) {
     try {
-      const {trace_no, machine_id, temperature, timestamp, product_no, vendor_name, vendor_address, vendor_phone, vendor_fdaId} = data;
+      const {trace_no, machine_id, temperature, timestamp, product_no, product_uuid, vendor_name, vendor_address, vendor_phone, vendor_fdaId} = data;
       const result = await this.db('trace_machine_info').insert({
         trace_no: trace_no,
         machine_id: machine_id,
         temperature: temperature,
         timestamp: timestamp,
         product_no: product_no,
+        product_uuid: product_uuid,
         vendor_name: vendor_name,
         vendor_address: vendor_address,
         vendor_phone: vendor_phone,

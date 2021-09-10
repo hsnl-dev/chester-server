@@ -3,6 +3,8 @@ kind: "Ingress"
 metadata:
   name: "app-ingress"
   namespace: "default"
+  annotations:
+    networking.gke.io/managed-certificates: "app-certificate"
 spec:
   rules:
   - http:
@@ -11,3 +13,4 @@ spec:
         backend:
           serviceName: "app-service"
           servicePort: 80
+    host: "realfoodtw.com"

@@ -139,6 +139,21 @@ class ProductModel {
       return null;
     }
   }
+
+  async initProduct(data) {
+    try {
+      const {uuid, product_no, partner_taxId} = data;
+      const result = await this.db('product_uuid').insert({
+        uuid: uuid,
+        product_no: product_no,
+        partner_taxId: partner_taxId
+      });
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
 }
 
 module.exports = ProductModel;

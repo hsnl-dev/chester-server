@@ -4,7 +4,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const YAML = require('yamljs');
 const cors = require('cors');
-const session = require('express-session');
+const session = require('cookie-session');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -22,7 +22,7 @@ app.use(
         secret: 'Hsnl-iot33564@',
         resave: false,
         saveUninitialized: true,
-        cookie: {secure: true, maxAge: 86400000},
+        cookie: {secure: true, maxAge: 86400000}
     })
 );
 
