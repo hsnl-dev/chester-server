@@ -12,7 +12,7 @@ const passwordResetRouter = require('./routes/passwordReset');
 const commodityRouter = require('./routes/commodity');
 const productRouter = require('./routes/product');
 const traceRouter = require('./routes/trace');
-const externalApiRouter = require('./routes/web');
+const externalApiRouter = require('./routes/api');
 
 const app = express();
 

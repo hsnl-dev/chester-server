@@ -21,11 +21,12 @@ router.get('/', auth, async(req, res, next) => {
 });
 
 router.post('/create', auth, async(req, res, next) => {
-  const {product_no, name, spec, product_unit, price, weight, weight_unit, shelf_life, shelf_life_unit, storage, picture, picture_description, note} = req.body;
+  const {product_no, product_uuid, name, spec, product_unit, price, weight, weight_unit, shelf_life, shelf_life_unit, storage, picture, picture_description, note} = req.body;
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
   const success = await productModel.createProduct({
     partner_id: partner.partner_id,
     product_no: product_no,
+    product_uuid: product_uuid,
     name: name,
     spec: spec,
     product_unit: product_unit,
@@ -39,7 +40,12 @@ router.post('/create', auth, async(req, res, next) => {
     picture_description: picture_description,        
     note: note
   });
-  if (success) {
+  if (!success) {
+    return res.status(403).send("Create product failed");
+  }
+
+  const success2 = productModel.updateInitList(product_uuid);
+  if (success2) {
     return res.status(200).send("Create product successful");
   } else {
     return res.status(403).send("Create product failed");
@@ -105,6 +111,17 @@ router.get("/options", auth, async (req, res) => {
     return res.status(200).send(result);
   } else {
     return res.status(403).send("Failed to get options");
+  }
+});
+
+router.get("/init-list", auth, async (req, res) => {
+  const partner = await partnerModel.getPartnerByUserId(req.user_id);
+  const partner_taxId = await partnerModel.getTaxId(partner.partner_id);
+  const initList = await productModel.getInitList(partner_taxId);
+  if (initList) {
+    return res.status(200).send(initList);
+  } else {
+    return res.status(403).send("Failed to get init product list");
   }
 });
 

@@ -126,6 +126,18 @@ class PartnerModel {
       return null;
     }
   }
+
+  async getTaxId(partner_id) {
+    try {
+      const result = await this.db('partner')
+        .where('id', partner_id)
+        .first();
+      return result.tax_id;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  } 
 }
 
 module.exports = PartnerModel;

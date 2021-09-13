@@ -19,10 +19,11 @@ class ProductModel {
 
   async createProduct(product) {
     try {
-      const {partner_id, product_no, name, spec, product_unit, price, weight, weight_unit, shelflife, shelflife_unit, storage, picture, picture_description, note} = product;
+      const {partner_id, product_no, product_uuid, name, spec, product_unit, price, weight, weight_unit, shelflife, shelflife_unit, storage, picture, picture_description, note} = product;
       const result = await this.db('product').insert({
         partner_id: partner_id,
         product_no: product_no,
+        product_uuid: product_uuid,
         name: name,
         spec: spec,
         product_unit: product_unit,
@@ -148,6 +149,32 @@ class ProductModel {
         product_no: product_no,
         partner_taxId: partner_taxId
       });
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async getInitList(tax_id) {
+    try {
+      const result = await this.db('product_uuid')
+        .where('partner_taxId', tax_id)
+        .where('info_created', 0);
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async updateInitList(product_uuid) {
+    try {
+      const result = await this.db('product_uuid')
+        .where('uuid', product_uuid)
+        .update({
+          info_created: 1
+        });
       return result;
     } catch (err) {
       console.log(err);

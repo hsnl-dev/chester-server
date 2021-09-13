@@ -17,6 +17,6 @@ module.exports = {
     EMAIL_USERNAME: process.env.EMAIL_USERNAME || 'ktgintkd@gmail.com',
     EMAIL_PASSWORD: process.env.EMAIL_PASSWORD || 'ucrbuyaszmkakwtw',
 
-    // Machine
-    MACHINE_URL: process.env.MACHINE_URL || 'https://www.imember.me/iMemberService/api_backend/queryMachineInfo'
+    // Ethereum 
+    ETHEREUM_URL: process.env.ETHEREUM_URL || 'https://goerli.infura.io/v3/835e763893664a92bd8b9ca1ae8ea6ba'
 }
