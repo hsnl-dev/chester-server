@@ -1,5 +1,5 @@
 const express = require('express');
-const sha3_256 = require('js-sha3').sha3_256;
+const sha256 = require('crypto-js/sha256');
 const moment = require('moment-timezone');
 
 const PartnerModel = require('../models/PartnerModel');
@@ -7,6 +7,7 @@ const ProductModel = require('../models/ProductModel');
 const CommodityModel = require('../models/CommodityModel');
 const TraceModel = require('../models/TraceModel');
 const auth = require('../middlewares/auth');
+const {query, append} = require('../utils/ChesterResume');
 
 const router = express.Router();
 const partnerModel = new PartnerModel();
@@ -83,9 +84,10 @@ const hash_data = async function (req, res) {
     vendor_fdaId: req.body.vendor_fdaId
   };
   console.log(JSON.stringify(result));
-  const hash = sha3_256(JSON.stringify(result));
+  const hash = sha256(JSON.stringify(result));
   const return_val = {
-    hash: hash,
+    trace_id: trace_id,
+    hash: '0x' + hash,
     result: result
   }
   return return_val;
@@ -116,9 +118,14 @@ router.get('/:trace_id', async(req, res) => {
   const result = await hash_data(req, res);
   console.log(result.hash);
   // fetch blockchain
-
+  const block_result = await query(result.trace_id);
+  console.log(block_result);
   // compare, if same => return
-  return res.status(200).send(result.result); 
+  if (result.hash === block_result) {
+    return res.status(200).send(result.result); 
+  } else {
+    return res.status(403).send("Failed to get trace info: hash value wrong");
+  }
 });
 
 router.post('/machine-info', async (req, res, next) => {
@@ -146,7 +153,8 @@ router.post('/machine-info', async (req, res, next) => {
   const result = await hash_data(req, res);
   console.log(result.hash);
   // to blockchain
-
+  const block_result = await append(result.trace_id, result.hash);
+  console.log(block_result);
 });
 
 router.post("/product-info", async (req, res) => {
