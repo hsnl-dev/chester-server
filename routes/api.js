@@ -37,25 +37,25 @@ const hash_data = async function (req, res) {
       staple_food.push({
         name: commodity.name,
         origin: commodity.origin,
-        fdaId: commodity.trace_no
+        url: "https://taft.coa.gov.tw/Resume/resulist.aspx?TraceCode=" + commodity.trace_no.replace('-', '')
       });
     } else if (element.type === 'main_dish') {
       main_dish.push({
         name: commodity.name,
         origin: commodity.origin,
-        fdaId: commodity.trace_no
+        url: "https://taft.coa.gov.tw/Resume/resulist.aspx?TraceCode=" + commodity.trace_no.replace('-', '')
       });
     } else if (element.type === 'side_dish') {
       side_dish.push({
         name: commodity.name,
         origin: commodity.origin,
-        fdaId: commodity.trace_no
+        url: "https://taft.coa.gov.tw/Resume/resulist.aspx?TraceCode=" + commodity.trace_no.replace('-', '')
       });
     } else if (element.type === 'others') {
       others.push({
         name: commodity.name,
         origin: commodity.origin,
-        fdaId: commodity.trace_no
+        url: "https://taft.coa.gov.tw/Resume/resulist.aspx?TraceCode=" + commodity.trace_no.replace('-', '')
       });
     } 
   }
