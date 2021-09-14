@@ -195,6 +195,18 @@ class TraceModel {
       return null;
     }
   }
+
+  async getTraceMachineInfo (trace_no) {
+    try {
+      const result = await this.db('trace_machine_info')
+        .where('trace_no', trace_no)
+        .first();
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
 }
 
 module.exports = TraceModel;

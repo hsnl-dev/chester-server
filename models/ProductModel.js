@@ -85,6 +85,18 @@ class ProductModel {
     }
   }
 
+  async getProductByUuid(product_uuid) {
+    try {
+      const result = await this.db('product')
+        .where('product_uuid', product_uuid)
+        .first();
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
   async getProducts(partner_id) {
     try {
       const result = await this.db('product')
