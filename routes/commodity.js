@@ -241,6 +241,7 @@ router.post("/create-vendor", auth, async (req, res) => {
   } else if (result) {
     res.status(200).json({
       status: 1,
+      vendor_id: result,
       message: "Create vendor successful"
     });
   } else {
