@@ -68,7 +68,7 @@ class TraceModel {
         .del();
       if (result) {
         const result2 = await this.db('trace_commodity')
-          .where('id', trace_id)
+          .where('trace_id', trace_id)
           .del();
         return true;
       }
@@ -146,20 +146,20 @@ class TraceModel {
       let result;
       if (operation === 1) {
         result = await this.db('traceability')  // 加印
-          .where('id', trace_id)
+          .where('trace_no', trace_id)
           .increment({
             amount: amount,
             print_amount: amount
           });
       } else if (operation === -1) {            // 作廢
         result = await this.db('traceability')
-          .where('id', trace_id)
+          .where('trace_no', trace_id)
           .decrement({
             amount: amount,
           });
       } else if (operation === 0) {              // 補印
         result = await this.db('traceability')
-          .where('id', trace_id)
+          .where('trace_no', trace_id)
           .increment({
             print_amount: amount
           });

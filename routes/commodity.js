@@ -4,7 +4,6 @@ const PartnerModel = require('../models/PartnerModel');
 const VendorModel = require('../models/VendorModel');
 const CommodityModel = require('../models/CommodityModel');
 const auth = require('../middlewares/auth');
-const { checkPreferences } = require('joi');
 
 const router = express.Router();
 const partnerModel = new PartnerModel();
@@ -35,7 +34,7 @@ router.get('/', auth, async(req, res, next) => {
 });
 
 router.post('/create', auth, async (req, res, next) => {
-  const {vendor_id, name, trace_no, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note} = req.body;
+  const {vendor_id, name, trace_no, batch_no, origin, brand, produce_period, amount, unit, MFG, EXP, unit_price, gross_price, note} = req.body;
   const success = await commodityModel.createCommodity({
     vendor_id: parseInt(vendor_id),
     name: name,
@@ -43,6 +42,7 @@ router.post('/create', auth, async (req, res, next) => {
     batch_no: batch_no,
     origin: origin,
     brand: brand,
+    produce_period: produce_period,
     amount: amount,
     unit: unit,
     MFG: MFG,
@@ -68,6 +68,7 @@ router.post('/create-multiple', auth, async (req, res) => {
       batch_no: com.batch_no,
       origin: com.origin,
       brand: com.brand,
+      produce_period: com.produce_period,
       amount: com.amount,
       unit: com.unit,
       MFG: com.MFG,
@@ -80,7 +81,6 @@ router.post('/create-multiple', auth, async (req, res) => {
       return res.status(403).send("Create commodities failed");
     }
   }
-
   return res.status(200).send("Create commodities successful");
 });
 
@@ -96,7 +96,7 @@ router.get("/:commodity_id/view", auth, async (req, res) => {
 });
 
 router.post("/:commodity_id/edit", auth, async (req, res) => {
-  const {name, trace_no, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note} = req.body;
+  const {name, trace_no, batch_no, origin, brand, produce_period, amount, unit, MFG, EXP, unit_price, gross_price, note} = req.body;
   const success = await commodityModel.updateCommodity({
     commodity_id: req.params.commodity_id,
     name: name,
@@ -104,6 +104,7 @@ router.post("/:commodity_id/edit", auth, async (req, res) => {
     batch_no: batch_no,
     origin: origin,
     brand: brand,
+    produce_period: produce_period,
     amount: amount,
     unit: unit,
     MFG: MFG,

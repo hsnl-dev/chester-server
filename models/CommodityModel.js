@@ -20,7 +20,7 @@ class CommodityModel {
 
   async createCommodity(commodity) {
     try {
-      const {vendor_id, name, trace_no, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note} = commodity;
+      const {vendor_id, name, trace_no, batch_no, origin, brand, produce_period, amount, unit, MFG, EXP, unit_price, gross_price, note} = commodity;
       const result = await this.db('commodity').insert({
         vendor_id: vendor_id,
         name: name,
@@ -28,6 +28,7 @@ class CommodityModel {
         batch_no: batch_no,
         origin: origin,
         brand: brand,
+        produce_period: produce_period,
         amount: amount,
         used: 0,
         unit: unit,
@@ -47,13 +48,14 @@ class CommodityModel {
 
   async createTmpCommodity(commodity) {
     try {
-      const {name, trace_no, batch_no, origin, brand, amount, unit, note} = commodity;
+      const {name, trace_no, batch_no, origin, brand, produce_period, amount, unit, note} = commodity;
       const result = await this.db('tmp_commodity').insert({
         name: name,
         trace_no: trace_no,
         batch_no: batch_no,
         origin: origin,
         brand: brand,
+        produce_period: produce_period,
         amount: amount,
         unit: unit,
         note: note
@@ -67,7 +69,7 @@ class CommodityModel {
 
   async updateCommodity(commodity) {
     try {
-      const {commodity_id, name, trace_no, batch_no, origin, brand, amount, unit, MFG, EXP, unit_price, gross_price, note, update_at} = commodity;
+      const {commodity_id, name, trace_no, batch_no, origin, brand, produce_period, amount, unit, MFG, EXP, unit_price, gross_price, note, update_at} = commodity;
       const result = await this.db('commodity')
         .where('id', commodity_id)
         .update({
@@ -76,6 +78,7 @@ class CommodityModel {
           batch_no: batch_no,
           origin: origin,
           brand: brand,
+          produce_period: produce_period,
           amount: amount,
           unit: unit,
           MFG: moment(MFG).tz("Asia/Taipei").format("YYYY-MM-DD HH:mm:ss"),

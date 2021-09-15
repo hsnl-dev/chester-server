@@ -39,7 +39,7 @@ router.post('/create', auth, async (req, res) => {
   const {product_id, amount, create_date, time_period, batch} = req.body;
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
   const product = await productModel.getProductById(product_id);
-  const trace_no = moment(create_date).format('YYYYMMDD') + time_period[0].value + batch + product.product_no;
+  const trace_no = moment(create_date).format('YYYYMMDD') + time_period[0].value + batch + product.product_uuid;
   console.log(trace_no);
   const success = await traceModel.createTraceability({
     trace_no: trace_no,
@@ -63,6 +63,7 @@ router.post('/create', auth, async (req, res) => {
 
 router.get("/:trace_id/view", auth, async (req, res) => {
   const traceability = await traceModel.getTraceabilityById(req.params.trace_id);
+  console.log(traceability);
   const product = await productModel.getProductById(traceability.product_id);
   const commodities = await traceModel.getTraceCommodities(req.params.trace_id);
   
@@ -197,6 +198,7 @@ router.post('/:trace_id/add-commodity', auth, async (req, res) => {
 router.post('/:trace_id/add-tmp-commodity', auth, async (req, res) => {
   const {commodities_arr} = req.body;
   console.log(commodities_arr);
+  const produce_period = "test";
   for (element of commodities_arr) {
     // insert to tmp_commodity (return id)
     const tmp_id = await commodityModel.createTmpCommodity({
@@ -205,6 +207,7 @@ router.post('/:trace_id/add-tmp-commodity', auth, async (req, res) => {
       batch_no: element.batch_no,
       origin: element.origin,
       brand: element.brand,
+      produce_period: produce_period,
       amount: element.amount,
       unit: element.unit,
       note: element.note
