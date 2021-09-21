@@ -207,6 +207,20 @@ class TraceModel {
       return null;
     }
   }
+
+  async setTraceBlockHash (trace_no, block_hash) {
+    try {
+      const result = await this.db('trace_machine_info')
+        .where('trace_no', trace_no)
+        .update({
+          block_hash: block_hash
+        });
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
 }
 
 module.exports = TraceModel;

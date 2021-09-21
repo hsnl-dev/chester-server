@@ -32,35 +32,38 @@ const hash_data = async function (req, res) {
     } else {                    // 填寫進貨
       commodity = await commodityModel.getTmpCommodityById(element.commodity_id); 
     }
-    let url = "";
+    const url = "https://taft.coa.gov.tw/Resume/resulist.aspx?TraceCode=" + commodity.trace_no.replace('-', '');
+    let bc_url = "";
     if (commodity.brand === "三光米" && commodity.produce_period && commodity.produce_period !== "") {
-      url = "https://fresh-io.web.app/dapp/1327?onShip=false";
-    } else {
-      url = "https://taft.coa.gov.tw/Resume/resulist.aspx?TraceCode=" + commodity.trace_no.replace('-', '');
+      bc_url = "https://fresh-io.web.app/dapp/1327?onShip=false";
     }
     if (element.type === 'staple_food') {
       staple_food.push({
         name: commodity.name,
         origin: commodity.origin,
-        url: url
+        url: url,
+        bc_url: bc_url
       });
     } else if (element.type === 'main_dish') {
       main_dish.push({
         name: commodity.name,
         origin: commodity.origin,
-        url: url
+        url: url, 
+        bc_url: bc_url
       });
     } else if (element.type === 'side_dish') {
       side_dish.push({
         name: commodity.name,
         origin: commodity.origin,
-        url: url
+        url: url,
+        bc_url: bc_url
       });
     } else if (element.type === 'others') {
       others.push({
         name: commodity.name,
         origin: commodity.origin,
-        url: url
+        url: url,
+        bc_url: bc_url
       });
     } 
   }
@@ -127,7 +130,11 @@ router.get('/:trace_id', async(req, res) => {
   console.log(block_result);
   // compare, if same => return
   if (result.hash === block_result) {
-    return res.status(200).send(result.result); 
+    const return_val = {
+      data: result.result,
+      block_hash: machine_info.block_hash
+    }
+    return res.status(200).send(return_val); 
   } else {
     return res.status(403).send("Failed to get trace info: hash value wrong");
   }
@@ -160,6 +167,10 @@ router.post('/machine-info', async (req, res, next) => {
   // to blockchain
   const block_result = await append(result.trace_id, result.hash);
   console.log(block_result);
+  const success = await traceModel.setTraceBlockHash(req.body.trace_no, block_result.transactionHash);
+  if (!success) {
+    console.log("Failed to update block hash");
+  }
 });
 
 router.post("/product-info", async (req, res) => {

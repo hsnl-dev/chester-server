@@ -174,6 +174,10 @@ router.post('/:trace_id/add-commodity', auth, async (req, res) => {
   console.log(commodities_arr);
   for (element of commodities_arr) {
     const commodity = await commodityModel.getCommodityById(element.commodity_id);
+    console.log(element.amount);
+    console.log(commodity);
+    console.log(commodity.amount);
+    console.log(commodity.used);
     if (element.amount > (commodity.amount - commodity.used)) {
       return res.status(403).send("Failed to add commodity: amount cannot be larger than remain");
     }
