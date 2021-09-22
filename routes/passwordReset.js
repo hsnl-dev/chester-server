@@ -8,7 +8,7 @@ const sendEmail = require("../utils/sendEmail");
 
 const router = express.Router();
 const userModel = new UserModel();
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "https://app.realfoodtw.com";
 
 router.post("/", async(req, res) => {
   const username = req.body.username;
