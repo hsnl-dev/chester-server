@@ -174,7 +174,7 @@ router.post('/machine-info', async (req, res, next) => {
 });
 
 router.post("/product-info", async (req, res) => {
-  const {product_uuid, product_no, tax_id} = req.body;
+  const {product_uuid, product_no, product_name, tax_id} = req.body;
   const success = await productModel.initProduct({
     uuid: product_uuid, 
     product_no: product_no, 

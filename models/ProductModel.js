@@ -155,7 +155,7 @@ class ProductModel {
 
   async initProduct(data) {
     try {
-      const {uuid, product_no, partner_taxId} = data;
+      const {uuid, product_no, product_name, partner_taxId} = data;
       const result = await this.db('product_uuid').insert({
         uuid: uuid,
         product_no: product_no,
