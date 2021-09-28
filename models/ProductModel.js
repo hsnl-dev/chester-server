@@ -159,6 +159,7 @@ class ProductModel {
       const result = await this.db('product_uuid').insert({
         uuid: uuid,
         product_no: product_no,
+        product_name: product_name,
         partner_taxId: partner_taxId
       });
       return result;

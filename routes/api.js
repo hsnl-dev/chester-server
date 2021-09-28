@@ -178,6 +178,7 @@ router.post("/product-info", async (req, res) => {
   const success = await productModel.initProduct({
     uuid: product_uuid, 
     product_no: product_no, 
+    product_name: product_name,
     partner_taxId: tax_id
   });
   
