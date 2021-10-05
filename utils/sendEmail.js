@@ -23,6 +23,7 @@ const sendEmail = async (email, subject, text) => {
     return `Message sent: ${mail_status.messageId}`;
   } catch (err) {
     console.log(err);
+    return null;
   }
 };
 
