@@ -62,11 +62,16 @@ router.post("/:user_id/:token", async (req, res) => {
     
     const success = await userModel.resetPassword(userID, password);
     if (success) {
-      await userModel.removePasswordToken(userID, token);
-      res.status(200).send("Password reset successfully");
+      const success2 = await userModel.removePasswordToken(userID, token);
+      const success3 = await userModel.activateUser(userID);
+      if (success2 && success3) {
+        res.status(200).send("Password reset successfully");
+      } else {
+        res.status(400).send("Password reset failed");
+      }
     } else {
       console.log("Reset password failed");
-      res.status(400).send("Server error");
+      res.status(400).send("Password reset failed");
     }
   } catch (err) {
     console.log(err);

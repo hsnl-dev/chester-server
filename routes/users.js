@@ -86,7 +86,7 @@ router.post('/signin', async(req, res, next) => {
         res.status(400).send('Add access token failed');
       }
     } else {
-      res.status(403).send("User is not activate");
+      res.status(403).send("User is not activate yet");
     }
   } else {
     res.status(403).send('登入失敗');
@@ -123,7 +123,8 @@ router.post('/create', auth, async(req, res, next) => {
         address_city: address_city,
         address_district: address_district,
         address_street: address_street,
-        note: note
+        note: note,
+        tax_id: username
       });
       if (!partnerSuccess) return res.status(400).send("Create partner failed");
     } else if (role == 2) {   // user is clerk => add member

@@ -25,7 +25,7 @@ class UserModel {
    * @returns 
    */
   async createUser(data) {
-    const {username, role, name, email, phone, password} = data;
+    const {username, role, name, phone, password, email, activate} = data;
     const md5 = crypto.createHash('md5');
     try {
       const result = await this.db('users').insert({
@@ -35,7 +35,7 @@ class UserModel {
         name: name.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, ''),
         phone: phone,
         email: email,
-        activate: 1
+        activate: activate
       });
       return result[0];
     } catch (err) {

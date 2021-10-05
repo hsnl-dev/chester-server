@@ -18,9 +18,9 @@ class PartnerModel {
   }
 
   async createPartner(partner) {
-    // owner_id (user_id), name, phone, food_industry_id, address, note
+    // owner_id (user_id), name, phone, food_industry_id, address, note, tax_id
     try {
-      const {owner_id, name, phone, food_industry_id, address_city, address_district, address_street, note} = partner;
+      const {owner_id, name, phone, food_industry_id, address_city, address_district, address_street, note, tax_id} = partner;
       const result = await this.db('partner').insert({
         name: name,
         phone: phone,
@@ -29,7 +29,8 @@ class PartnerModel {
         address_city: address_city,
         address_district: address_district,
         address_street: address_street,
-        note: note
+        note: note,
+        tax_id: tax_id
       });
       const linked = await this.addMember(result[0], owner_id, 1);
       return linked && result;
