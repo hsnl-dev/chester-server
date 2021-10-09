@@ -1,4 +1,7 @@
 module.exports = {
+    // Host
+    BASE_URL: process.env.BASE_URL || "https://app.realfoodtw.com",
+
     // SQL
     DB_URL: process.env.DB_URL || '35.201.146.41',
     DB_USERNAME: process.env.DB_USERNAME || 'root',

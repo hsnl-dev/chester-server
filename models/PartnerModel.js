@@ -102,6 +102,16 @@ class PartnerModel {
     }
   }
 
+  async getAllPartners() {
+    try {
+      const result = await this.db('partner');
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
   async addMachine(data) {
     try {
       const {partner_id, machine_name, machine_id} = data;

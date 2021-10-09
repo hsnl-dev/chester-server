@@ -12,6 +12,8 @@ module.exports = async (req, res, next) => {
   const result = await userModel.verifyAccessToken(token);
   if (result) {
     req.user_id = result.user_id;
+    const user = await userModel.getUserById(result.user_id);
+    if (user) req.admin = (user.role === 0) ? true : false;
     next();
   } else {
     res.status(401).send("Invalid token");

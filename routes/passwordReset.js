@@ -5,10 +5,10 @@ const Joi = require("joi");
 
 const UserModel = require('../models/UserModel');
 const sendEmail = require("../utils/sendEmail");
+const {BASE_URL} = require('../config');
 
 const router = express.Router();
 const userModel = new UserModel();
-const BASE_URL = "https://app.realfoodtw.com";
 
 router.post("/", async(req, res) => {
   const username = req.body.username;

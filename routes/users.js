@@ -7,34 +7,56 @@ const UserModel = require('../models/UserModel');
 const PartnerModel = require('../models/PartnerModel');
 const sendEmail = require('../utils/sendEmail');
 const auth = require('../middlewares/auth');
+const {BASE_URL} = require('../config');
 
 const router = express.Router();
 const userModel = new UserModel();
 const partnerModel = new PartnerModel();
-const BASE_URL = "http://localhost:3000";
 
 router.get('/', auth, async(req, res, next) => {
-  const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const members = await partnerModel.getPartnerMembers(partner.partner_id);
   let member_arr = [];
-  console.log(members);
-  for (let i = 0; i < members.length; i++) {
-    const user = await userModel.getUserById(members[i].user_id);
-    const data = {
-      user_id: user.id,
-      role: user.role,
-      username: user.username,
-      name: user.name,
-      phone: user.phone,
-      email: user.email,
-      activate: user.activate
+  let partner_arr = [];
+  if (req.admin === false) {
+    const partner = await partnerModel.getPartnerByUserId(req.user_id);
+    const members = await partnerModel.getPartnerMembers(partner.partner_id);
+    console.log(members);
+    for (let i = 0; i < members.length; i++) {
+      const user = await userModel.getUserById(members[i].user_id);
+      const data = {
+        user_id: user.id,
+        role: user.role,
+        username: user.username,
+        name: user.name,
+        phone: user.phone,
+        email: user.email,
+        activate: user.activate
+      };
+      member_arr.push(data);
     }
-    member_arr.push(data);
+    const partner_data = await partnerModel.getPartnerData(partner.partner_id);
+    partner_arr.push(partner_data);
+  } else {  // admin
+    const partners = await partnerModel.getAllPartners();
+    console.log(partners);
+    for (let i = 0; i < partners.length; i++) {
+      const owner = await userModel.getUserById(partners[i].owner_id);
+      const data = {
+        user_id: owner.id,
+        role: owner.role,
+        username: owner.username,
+        name: owner.name,
+        phone: owner.phone,
+        email: owner.email,
+        activate: owner.activate
+      };
+      member_arr.push(data);
+      partner_arr.push(partners[i]);
+    }
   }
-  const partner_data = await partnerModel.getPartnerData(partner.partner_id);
+  
   const result = {
     members: member_arr,
-    partner: partner_data
+    partner: partner_arr
   }
   if (result) {
     res.status(200).send(result);

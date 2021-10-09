@@ -11,24 +11,27 @@ const vendorModel = new VendorModel();
 const commodityModel = new CommodityModel();
 
 router.get('/', auth, async(req, res, next) => {
-  const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const vendors = await vendorModel.getAllVendors(partner.partner_id);
-  console.log(vendors.length);
-  const commodity_arr = [];
-  for (let i = 0; i < vendors.length; i++) {
-    const commodities = await commodityModel.getCommodities(vendors[i].id);
-    if (commodities) {
-      commodities.forEach(element => {
-        if (element.activate === 1) {
-          commodity_arr.push(element);
-        }
-      });
+  let result = {};
+  if (req.admin === false) {
+    const partner = await partnerModel.getPartnerByUserId(req.user_id);
+    const vendors = await vendorModel.getAllVendors(partner.partner_id);
+    console.log(vendors.length);
+    const commodity_arr = [];
+    for (let i = 0; i < vendors.length; i++) {
+      const commodities = await commodityModel.getCommodities(vendors[i].id);
+      if (commodities) {
+        commodities.forEach(element => {
+          if (element.activate === 1) {
+            commodity_arr.push(element);
+          }
+        });
+      }
     }
+    result = {
+      vendors: vendors,
+      commodities: commodity_arr
+    };
   }
-  const result = {
-    vendors: vendors,
-    commodities: commodity_arr
-  };
   console.log(result);
   res.status(200).send(result);
 });

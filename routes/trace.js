@@ -16,22 +16,24 @@ const commodityModel = new CommodityModel();
 const traceModel = new TraceModel();
 
 router.get('/', auth, async(req, res) => {
-  const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const traceability = await traceModel.getTraceabilities(partner.partner_id);
   let return_arr = [];
-  try {
-    for (element of traceability) {
-      const product = await productModel.getProductById(element.product_id);
-      const data = {
-        ...element,
-        product_no: product.product_no,
-        product_name: product.name
-      }
-      return_arr.push(data);
-    };
-  } catch (err) {
-    res.status(403).send("Get traceability failed: internal server error");
-  }
+  if (req.admin === false) {
+    const partner = await partnerModel.getPartnerByUserId(req.user_id);
+    const traceability = await traceModel.getTraceabilities(partner.partner_id);
+    try {
+      for (element of traceability) {
+        const product = await productModel.getProductById(element.product_id);
+        const data = {
+          ...element,
+          product_no: product.product_no,
+          product_name: product.name
+        }
+        return_arr.push(data);
+      };
+    } catch (err) {
+      res.status(403).send("Get traceability failed: internal server error");
+    }
+  } 
   res.status(200).send(return_arr);
 });
 

@@ -9,14 +9,16 @@ const partnerModel = new PartnerModel();
 const productModel = new ProductModel();
 
 router.get('/', auth, async(req, res, next) => {
-  const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const products =  await productModel.getProducts(partner.partner_id);
-  const options = await productModel.getOptions();
-  const result = {
-    products: products,
-    options: options
-  };
-  console.log(result);
+  let result = {};
+  if (req.admin === false) {
+    const partner = await partnerModel.getPartnerByUserId(req.user_id);
+    const products =  await productModel.getProducts(partner.partner_id);
+    const options = await productModel.getOptions();
+    result = {
+      products: products,
+      options: options
+    };
+  }
   res.status(200).send(result);
 });
 
@@ -123,6 +125,17 @@ router.get("/init-list", auth, async (req, res) => {
   } else {
     return res.status(403).send("Failed to get init product list");
   }
+});
+
+router.get('/activate-product', auth, async(req, res, next) => {
+  let product_arr = [];
+  if (req.admin === false) {
+    const partner = await partnerModel.getPartnerByUserId(req.user_id);
+    const products = await productModel.getProducts(partner.partner_id);
+    product_arr = products.filter(p => p.activate === 1);
+    console.log(product_arr);
+  }
+  res.status(200).send(product_arr);
 });
 
 module.exports = router;
