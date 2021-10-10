@@ -15,9 +15,9 @@ const partnerModel = new PartnerModel();
 
 router.get('/', auth, async(req, res, next) => {
   let member_arr = [];
-  let partner_arr = [];
   if (req.admin === false) {
     const partner = await partnerModel.getPartnerByUserId(req.user_id);
+    const partner_data = await partnerModel.getPartnerData(partner.partner_id);
     const members = await partnerModel.getPartnerMembers(partner.partner_id);
     console.log(members);
     for (let i = 0; i < members.length; i++) {
@@ -29,13 +29,39 @@ router.get('/', auth, async(req, res, next) => {
         name: user.name,
         phone: user.phone,
         email: user.email,
-        activate: user.activate
+        activate: user.activate,
+        partner_name: partner_data.name,
+        partner_phone: partner_data.phone,
+        partner_fid: partner_data.food_industry_id,
+        partner_address_city: partner_data.addres_city,
+        partner_address_district: partner_data.address_district,
+        partner_address_street: partner_data.address_street,
+        partner_note: partner_data.note,
       };
       member_arr.push(data);
     }
-    const partner_data = await partnerModel.getPartnerData(partner.partner_id);
-    partner_arr.push(partner_data);
   } else {  // admin
+    const admins = await userModel.getAllAdmins();
+    console.log(admins);
+    for (let i = 0; i < admins.length; i++) {
+      const data = {
+        user_id: admins[i].id,
+        role: admins[i].role,
+        username: admins[i].username,
+        name: admins[i].name,
+        phone: admins[i].phone,
+        email: admins[i].email,
+        activate: admins[i].activate,
+        partner_name: "",
+        partner_phone: "",
+        partner_fid: "",
+        partner_address_city: "",
+        partner_address_district: "",
+        partner_address_street: "",
+        partner_note: ""
+      };
+      member_arr.push(data);
+    }
     const partners = await partnerModel.getAllPartners();
     console.log(partners);
     for (let i = 0; i < partners.length; i++) {
@@ -47,19 +73,21 @@ router.get('/', auth, async(req, res, next) => {
         name: owner.name,
         phone: owner.phone,
         email: owner.email,
-        activate: owner.activate
+        activate: owner.activate,
+        partner_name: partners[i].name,
+        partner_phone: partners[i].phone,
+        partner_fid: partners[i].food_industry_id,
+        partner_address_city: partners[i].addres_city,
+        partner_address_district: partners[i].address_district,
+        partner_address_street: partners[i].address_street,
+        partner_note: partners[i].note,
       };
       member_arr.push(data);
-      partner_arr.push(partners[i]);
     }
   }
-  
-  const result = {
-    members: member_arr,
-    partner: partner_arr
-  }
-  if (result) {
-    res.status(200).send(result);
+
+  if (member_arr) {
+    res.status(200).send(member_arr);
   } else {
     res.status(403).send("Get member failed");
   }

@@ -185,6 +185,17 @@ class UserModel {
     }
   }
 
+  async getAllAdmins() {
+    try {
+      const result = await this.db('users')
+        .where('role', 0);
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
   async getUserByUsername(username) {
     try {
       const result = await this.db('users')
