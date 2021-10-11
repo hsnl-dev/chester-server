@@ -30,6 +30,7 @@ router.get('/', auth, async(req, res, next) => {
         phone: user.phone,
         email: user.email,
         activate: user.activate,
+        partner_id: partner_data.id,
         partner_name: partner_data.name,
         partner_phone: partner_data.phone,
         partner_fid: partner_data.food_industry_id,
@@ -52,6 +53,7 @@ router.get('/', auth, async(req, res, next) => {
         phone: admins[i].phone,
         email: admins[i].email,
         activate: admins[i].activate,
+        partner_id: "",
         partner_name: "",
         partner_phone: "",
         partner_fid: "",
@@ -74,6 +76,7 @@ router.get('/', auth, async(req, res, next) => {
         phone: owner.phone,
         email: owner.email,
         activate: owner.activate,
+        partner_id: partners[i].id,
         partner_name: partners[i].name,
         partner_phone: partners[i].phone,
         partner_fid: partners[i].food_industry_id,
@@ -269,6 +272,23 @@ router.post("/:user_id/activate", auth, async (req, res) => {
 
 router.get("/:partner_id/machines", auth, async (req, res) => {
   const result = await partnerModel.getMachines(req.params.partner_id);
+  if (result.length > 0) {
+    const machines = result.map(function(machine) {
+      return {
+        "machine_name": machine.machine_name,
+        "machine_id": machine.machine_id
+      };
+    });
+    console.log(machines);
+    return res.status(200).send(machines);
+  } else {
+    return res.status(403).send("Fail to get machines");
+  }
+});
+
+router.get("/machines", auth, async (req, res) => {
+  const partner = await partnerModel.getPartnerByUserId(req.user_id);
+  const result = await partnerModel.getMachines(partner.partner_id);
   if (result.length > 0) {
     const machines = result.map(function(machine) {
       return {
