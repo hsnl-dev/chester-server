@@ -267,9 +267,8 @@ router.post("/:user_id/activate", auth, async (req, res) => {
   }
 });
 
-router.get("/partner-machines", auth, async (req, res) => {
-  const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const result = await partnerModel.getMachines(partner.partner_id);
+router.get("/:partner_id/machines", auth, async (req, res) => {
+  const result = await partnerModel.getMachines(req.params.partner_id);
   if (result.length > 0) {
     const machines = result.map(function(machine) {
       return {
