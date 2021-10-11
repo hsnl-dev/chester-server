@@ -1,5 +1,5 @@
 const express = require('express');
-const moment = require('moment');
+const moment = require('moment-timezone');
 
 const PartnerModel = require('../models/PartnerModel');
 const VendorModel = require('../models/VendorModel');
@@ -41,7 +41,7 @@ router.post('/create', auth, async (req, res) => {
   const {product_id, amount, create_date, time_period, batch} = req.body;
   const partner = await partnerModel.getPartnerByUserId(req.user_id);
   const product = await productModel.getProductById(product_id);
-  const trace_no = moment(create_date).format('YYYYMMDD') + time_period[0].value + batch + product.product_uuid;
+  const trace_no = moment(create_date).tz("Asia/Taipei").format('YYYYMMDD') + time_period[0].value + batch + product.product_uuid;
   console.log(trace_no);
   const success = await traceModel.createTraceability({
     trace_no: trace_no,
