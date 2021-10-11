@@ -33,7 +33,7 @@ router.get('/', auth, async(req, res, next) => {
         partner_name: partner_data.name,
         partner_phone: partner_data.phone,
         partner_fid: partner_data.food_industry_id,
-        partner_address_city: partner_data.addres_city,
+        partner_address_city: partner_data.address_city,
         partner_address_district: partner_data.address_district,
         partner_address_street: partner_data.address_street,
         partner_note: partner_data.note,
