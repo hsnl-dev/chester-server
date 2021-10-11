@@ -77,7 +77,7 @@ router.get('/', auth, async(req, res, next) => {
         partner_name: partners[i].name,
         partner_phone: partners[i].phone,
         partner_fid: partners[i].food_industry_id,
-        partner_address_city: partners[i].addres_city,
+        partner_address_city: partners[i].address_city,
         partner_address_district: partners[i].address_district,
         partner_address_street: partners[i].address_street,
         partner_note: partners[i].note,
