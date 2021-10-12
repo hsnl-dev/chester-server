@@ -338,7 +338,7 @@ router.post("/:partner_id/edit-machines", auth, async (req, res) => {
   return res.status(200).send("Update machine successful");
 });
 
-router.post("/:partner_id/delete-machines", auth, async (req, res) => {
+router.post("/:partner_id/delete-machine", auth, async (req, res) => {
   const {machine_id} = req.body;
   const success = await partnerModel.deleteMachine({
     partner_id: req.params.partner_id,
