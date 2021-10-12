@@ -303,21 +303,52 @@ router.get("/machines", auth, async (req, res) => {
   }
 });
 
-router.post("/add-machines", auth, async (req, res) => {
+router.post("/:partner_id/add-machines", auth, async (req, res) => {
   const {machines} = req.body;
-  const partner = await partnerModel.getPartnerByUserId(req.user_id);
+  //const partner = await partnerModel.getPartnerByUserId(req.user_id);
   try {
     for (element of machines) {
       const success = await partnerModel.addMachine({
-        partner_id: partner.partner_id,
+        partner_id: req.params.partner_id,
         machine_name: element.name,
-        machine_id: element.number
+        machine_id: element.id
       });
     }
   } catch (err) {
     return res.status(403).send("Add machine failed");
   }
   return res.status(200).send("Add machine successful");
+});
+
+router.post("/:partner_id/edit-machines", auth, async (req, res) => {
+  const {machines} = req.body;
+  try {
+    for (element of machines) {
+      console.log(machine_name);
+      console.log(machine_id);
+      const success = await partnerModel.updateMachine({
+        partner_id: req.params.partner_id,
+        machine_name: element.name,
+        machine_id: element.id
+      });
+    }
+  } catch (err) {
+    return res.status(403).send("Update machine failed");
+  }
+  return res.status(200).send("Update machine successful");
+});
+
+router.post("/:partner_id/delete-machines", auth, async (req, res) => {
+  const {machine_id} = req.body;
+  const success = await partnerModel.deleteMachine({
+    partner_id: req.params.partner_id,
+    machine_id: machine_id
+  });
+  if (!success) {
+    return res.status(403).send("Delete machine failed");
+  }
+
+  return res.status(200).send("Delete machine successful");
 });
 
 module.exports = router;

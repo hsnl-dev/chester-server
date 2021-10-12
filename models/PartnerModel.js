@@ -127,6 +127,36 @@ class PartnerModel {
     }
   }
 
+  async updateMachine(data) {
+    try {
+      const {partner_id, machine_name, machine_id} = data;
+      const result = await this.db('partner_machine')
+        .where('partner_id', partner_id)
+        .where('machine_id', machine_id)
+        .update({
+          machine_name: machine_name,
+        });
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async deleteMachine(data) {
+    try {
+      const {partner_id, machine_id} = data;
+      const result = await this.db('partner_machine')
+        .where('partner_id', partner_id)
+        .where('machine_id', machine_id)
+        .del();
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
   async getMachines(partner_id) {
     try {
       const result = await this.db('partner_machine')
