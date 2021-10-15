@@ -40,6 +40,27 @@ class PartnerModel {
     }
   }
 
+  async updatePartner(data) {
+    const {partner_id, partner_name, partner_phone, food_industry_id, city, district, street, note} = data;
+    try {
+      const result = await this.db('partner')
+        .where('id', partner_id)
+        .update({
+          name: partner_name,
+          phone: partner_phone,
+          food_industry_id: food_industry_id,
+          address_city: city,
+          address_district: district,
+          address_street: street,
+          note: note
+        });
+      return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
   async getPartnerData(partner_id) {
     try {
       const result = await this.db('partner')

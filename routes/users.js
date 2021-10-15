@@ -189,34 +189,34 @@ router.post('/create', auth, async(req, res, next) => {
     //   console.log("Role ID invalid");
     //   return res.status(400).send("Role ID invalid");
     // }
-
+    return res.status(200).send("Create member successful");
     // send email
-    const randomToken = crypto.randomBytes(32).toString("hex");
-    const expireTime = moment()
-      .add(30, 'minutes')
-      .format('YYYY-MM-DD HH:mm:ss');
-    const tokenSuccess = await userModel.addResetPasswordToken({
-      user_id: userID,
-      token: randomToken,
-      expireAt: expireTime,
-    });
+  //   const randomToken = crypto.randomBytes(32).toString("hex");
+  //   const expireTime = moment()
+  //     .add(30, 'minutes')
+  //     .format('YYYY-MM-DD HH:mm:ss');
+  //   const tokenSuccess = await userModel.addResetPasswordToken({
+  //     user_id: userID,
+  //     token: randomToken,
+  //     expireAt: expireTime,
+  //   });
 
-    if (tokenSuccess) {
-      const link = `${BASE_URL}/password-reset/${userID}/${randomToken}`;
-      const result = await sendEmail(email, "RealFood: Password Reset Link", link);
-      if (result) {
-        res.status(200).send("Password reset link is sent to your email account");
-      } else {
-        res.status(403).send("Failed to send email");
-      }
-    } else {
-      console.log("Failed to add password token");
-      res.status(400).send('Server error');
-    }
+  //   if (tokenSuccess) {
+  //     const link = `${BASE_URL}/password-reset/${userID}/${randomToken}`;
+  //     const result = await sendEmail(email, "RealFood: Password Reset Link", link);
+  //     if (result) {
+  //       res.status(200).send("Password reset link is sent to your email account");
+  //     } else {
+  //       res.status(403).send("Failed to send email");
+  //     }
+  //   } else {
+  //     console.log("Failed to add password token");
+  //     res.status(400).send('Server error');
+  //   }
   } else {
     res.status(403).send('Email already exist');
   }
-}); 
+});
 
 router.post("/:user_id/edit", auth, async (req, res) => {
   const {username, role, name, phone, email, partner_name, partner_phone, food_industry_id, address_city, address_district, address_street, note} = req.body;
@@ -228,7 +228,19 @@ router.post("/:user_id/edit", auth, async (req, res) => {
     phone: phone,
     email: email
   });
-  if (success) {
+  const partner = await partnerModel.getPartnerByUserId(req.params.user_id);
+  const success2 = await partnerModel.updatePartner({
+    partner_id: partner.partner_id,
+    partner_name: partner_name,
+    partner_phone: partner_phone,
+    food_industry_id: food_industry_id,
+    city: address_city,
+    district: address_district,
+    street: address_street,
+    note: note
+  });
+
+  if (success && success2) {
     return res.status(200).send("Update user successful");
   } else {
     return res.status(403).send("Update user failed");
