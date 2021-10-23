@@ -106,7 +106,7 @@ router.get('/:trace_id', async(req, res) => {
   const arr = req.params.trace_id.split("-");
   const trace_no = arr[0];
   const machine_id = arr[1];
-  const machine_info = await traceModel.getTraceMachineInfo(trace_no);
+  const machine_info = await traceModel.getTraceMachineInfo(trace_no, machine_id);
   if (!machine_info) {
     return res.status(403).send("Failed to get machine info");
   }

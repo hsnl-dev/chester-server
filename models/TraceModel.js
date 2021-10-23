@@ -196,12 +196,28 @@ class TraceModel {
     }
   }
 
-  async getTraceMachineInfo (trace_no) {
+  async getTraceMachineInfo (trace_no, machine_id) {
     try {
       const result = await this.db('trace_machine_info')
         .where('trace_no', trace_no)
+        .where('machine_id', machine_id)
         .first();
       return result;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+
+  async getDisabledMachine (trace_no) {
+    try {
+      let disabledMachine = [];
+      const result = await this.db('trace_machine_info')
+        .where('trace_no', trace_no);
+      for (element of result) {
+        disabledMachine.push(element.machine_id);
+      }
+      return disabledMachine;
     } catch (err) {
       console.log(err);
       return null;

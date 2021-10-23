@@ -23,10 +23,12 @@ router.get('/', auth, async(req, res) => {
     try {
       for (element of traceability) {
         const product = await productModel.getProductById(element.product_id);
+        const disabledMachine = await traceModel.getDisabledMachine(element.trace_no);
         const data = {
           ...element,
           product_no: product.product_no,
-          product_name: product.name
+          product_name: product.name,
+          disabled_machine: disabledMachine
         }
         return_arr.push(data);
       };
