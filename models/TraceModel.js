@@ -214,7 +214,7 @@ class TraceModel {
       let disabledMachine = [];
       const result = await this.db('trace_machine_info')
         .where('trace_no', trace_no);
-      for (element of result) {
+      for (let element of result) {
         disabledMachine.push(element.machine_id);
       }
       return disabledMachine;

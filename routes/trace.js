@@ -21,7 +21,7 @@ router.get('/', auth, async(req, res) => {
     const partner = await partnerModel.getPartnerByUserId(req.user_id);
     const traceability = await traceModel.getTraceabilities(partner.partner_id);
     try {
-      for (element of traceability) {
+      for (let element of traceability) {
         const product = await productModel.getProductById(element.product_id);
         const disabledMachine = await traceModel.getDisabledMachine(element.trace_no);
         const data = {
