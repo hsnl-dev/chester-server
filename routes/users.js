@@ -189,30 +189,30 @@ router.post('/create', auth, async(req, res, next) => {
     //   console.log("Role ID invalid");
     //   return res.status(400).send("Role ID invalid");
     // }
-    return res.status(200).send("Create member successful");
+    //return res.status(200).send("Create member successful");
     // send email
-  //   const randomToken = crypto.randomBytes(32).toString("hex");
-  //   const expireTime = moment()
-  //     .add(30, 'minutes')
-  //     .format('YYYY-MM-DD HH:mm:ss');
-  //   const tokenSuccess = await userModel.addResetPasswordToken({
-  //     user_id: userID,
-  //     token: randomToken,
-  //     expireAt: expireTime,
-  //   });
+    const randomToken = crypto.randomBytes(32).toString("hex");
+    const expireTime = moment()
+      .add(30, 'minutes')
+      .format('YYYY-MM-DD HH:mm:ss');
+    const tokenSuccess = await userModel.addResetPasswordToken({
+      user_id: userID,
+      token: randomToken,
+      expireAt: expireTime,
+    });
 
-  //   if (tokenSuccess) {
-  //     const link = `${BASE_URL}/password-reset/${userID}/${randomToken}`;
-  //     const result = await sendEmail(email, "RealFood: Password Reset Link", link);
-  //     if (result) {
-  //       res.status(200).send("Password reset link is sent to your email account");
-  //     } else {
-  //       res.status(403).send("Failed to send email");
-  //     }
-  //   } else {
-  //     console.log("Failed to add password token");
-  //     res.status(400).send('Server error');
-  //   }
+    if (tokenSuccess) {
+      const link = `${BASE_URL}/password-reset/${userID}/${randomToken}`;
+      const result = await sendEmail(email, "RealFood: Password Reset Link", link);
+      if (result) {
+        res.status(200).send("Password reset link is sent to your email account");
+      } else {
+        res.status(403).send("Failed to send email");
+      }
+    } else {
+      console.log("Failed to add password token");
+      res.status(400).send('Server error');
+    }
   } else {
     res.status(403).send('Email already exist');
   }

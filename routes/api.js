@@ -140,7 +140,7 @@ router.get('/:trace_id', async(req, res) => {
   }
 });
 
-router.post('/machine-info', async (req, res, next) => {
+router.post('/machine-info', async (req, res) => {
   const {trace_no, machine_id, temperature, timestamp, product_no, product_uuid, vendor_name, vendor_address, vendor_phone, vendor_fdaId} = req.body;
   const success = await traceModel.setTraceMachineInfo({
     trace_no: trace_no,
@@ -154,22 +154,21 @@ router.post('/machine-info', async (req, res, next) => {
     vendor_phone: vendor_phone,
     vendor_fdaId: vendor_fdaId
   });
-  if (success) {
+  if (!success) {
+    return res.status(403).send("Failed");
+  }
+
+  // calculate hash
+  const result = await hash_data(req, res);
+  console.log(result.hash);
+  // send to blockchain
+  const block_result = await append(result.trace_id, result.hash);
+  console.log(block_result);
+  const success2 = await traceModel.setTraceBlockHash(req.body.trace_no, block_result.transactionHash);
+  if (success2) {
     res.status(200).send("Succeed");
   } else {
     res.status(403).send("Failed");
-  }
-  next();
-}, async (req, res) => {
-  // hash => send to blockchain
-  const result = await hash_data(req, res);
-  console.log(result.hash);
-  // to blockchain
-  const block_result = await append(result.trace_id, result.hash);
-  console.log(block_result);
-  const success = await traceModel.setTraceBlockHash(req.body.trace_no, block_result.transactionHash);
-  if (!success) {
-    console.log("Failed to update block hash");
   }
 });
 

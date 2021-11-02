@@ -16,9 +16,9 @@ module.exports = {
     GCP_PROJECT_ID: "",
     FIREBASE_ADMIN_CREDENTIALS: process.env.FIREBASE_ADMIN_CREDENTIALS || "",
 
-    // Gmail
+    // SMTP
     EMAIL_USERNAME: process.env.EMAIL_USERNAME || 'ktgintkd@gmail.com',
-    EMAIL_PASSWORD: process.env.EMAIL_PASSWORD || 'ucrbuyaszmkakwtw',
+    API_KEY: process.env.API_EKY || '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',
 
     // Ethereum 
     ETHEREUM_URL: process.env.ETHEREUM_URL || 'https://goerli.infura.io/v3/835e763893664a92bd8b9ca1ae8ea6ba'

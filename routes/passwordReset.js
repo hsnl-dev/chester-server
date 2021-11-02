@@ -13,12 +13,12 @@ const userModel = new UserModel();
 router.post("/", async(req, res) => {
   const username = req.body.username;
   try {
-    const user = userModel.getUserByUsername(username);
+    const user = await userModel.getUserByUsername(username);
     if (!user) {
       console.log("User not found");
       return res.status(400).send("Email does not belong to any user")
     }
-
+    console.log(user);
     const randomToken = crypto.randomBytes(32).toString("hex");
     const expireTime = moment()
       .add(5, 'minutes')
