@@ -1,5 +1,5 @@
 const express = require("express");
-const moment = require('moment');
+const moment = require('moment-timezone');
 const crypto = require("crypto");
 const Joi = require("joi");
 
@@ -22,6 +22,7 @@ router.post("/", async(req, res) => {
     const randomToken = crypto.randomBytes(32).toString("hex");
     const expireTime = moment()
       .add(5, 'minutes')
+      .tz("Asia/Taipei")
       .format('YYYY-MM-DD HH:mm:ss');
     const success = await userModel.addResetPasswordToken({
       user_id: user.id,
