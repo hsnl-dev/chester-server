@@ -299,19 +299,23 @@ router.get("/:partner_id/machines", auth, async (req, res) => {
 });
 
 router.get("/machines", auth, async (req, res) => {
-  const partner = await partnerModel.getPartnerByUserId(req.user_id);
-  const result = await partnerModel.getMachines(partner.partner_id);
-  if (result.length > 0) {
-    const machines = result.map(function(machine) {
-      return {
-        "machine_name": machine.machine_name,
-        "machine_id": machine.machine_id
-      };
-    });
-    console.log(machines);
-    return res.status(200).send(machines);
+  if (req.admin === false) {
+    const partner = await partnerModel.getPartnerByUserId(req.user_id);
+    const result = await partnerModel.getMachines(partner.partner_id);
+    if (result.length > 0) {
+      const machines = result.map(function(machine) {
+        return {
+          "machine_name": machine.machine_name,
+          "machine_id": machine.machine_id
+        };
+      });
+      console.log(machines);
+      return res.status(200).send(machines);
+    } else {
+      return res.status(403).send("Fail to get machines");
+    }
   } else {
-    return res.status(403).send("Fail to get machines");
+    return res.status(200).send([]);
   }
 });
 
